@@ -40,6 +40,46 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
     console.log(`[API Response] ${response.status} ${response.config.url}`);
+    
+    // Check if the response matches our centralized backend API envelope format
+    if (
+      response.data &&
+      typeof response.data === "object" &&
+      "success" in response.data &&
+      "data" in response.data
+    ) {
+      const { success, message, data } = response.data;
+      
+      // If data is an array, return it directly so that Array.isArray(response.data) expectations in services are met
+      if (Array.isArray(data)) {
+        return {
+          ...response,
+          data,
+        };
+      }
+      
+      // If data is an object, merge success and message so booking/contact forms can read success directly from response.data
+      if (data && typeof data === "object") {
+        return {
+          ...response,
+          data: {
+            ...data,
+            success,
+            message,
+          },
+        };
+      }
+      
+      // Otherwise, return success and message directly
+      return {
+        ...response,
+        data: {
+          success,
+          message,
+        },
+      };
+    }
+    
     return response;
   },
   (error: AxiosError) => {

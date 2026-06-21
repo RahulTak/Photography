@@ -1,0 +1,168 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model GalleryCategory {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  items     Gallery[]
+
+  @@index([name])
+}
+
+model Gallery {
+  id         String          @id @default(uuid())
+  title      String
+  categoryId Int
+  category   GalleryCategory @relation(fields: [categoryId], references: [id])
+  imageUrl   String          @db.VarChar(512)
+  location   String
+  couple     String
+  year       String
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  deletedAt  DateTime?
+
+  @@index([categoryId])
+  @@index([deletedAt])
+}
+
+model Workshop {
+  id              String                 @id @default(uuid())
+  title           String
+  description     String                 @db.Text
+  longDescription String                 @db.Text
+  date            String
+  time            String
+  price           Float
+  currency        String                 @default("INR")
+  seatsTotal      Int
+  seatsAvailable  Int
+  instructor      String
+  location        String
+  image           String                 @db.VarChar(512)
+  syllabus        Json                   // Storing string[] as JSON array
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  deletedAt       DateTime?
+  registrations   WorkshopRegistration[]
+
+  @@index([deletedAt])
+}
+
+model WorkshopRegistration {
+  id         String    @id @default(uuid())
+  workshopId String
+  workshop   Workshop  @relation(fields: [workshopId], references: [id])
+  name       String
+  email      String
+  phone      String
+  seats      Int
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+
+  @@index([workshopId])
+  @@index([deletedAt])
+}
+
+model Testimonial {
+  id        String    @id @default(uuid())
+  quote     String    @db.Text
+  author    String
+  role      String
+  avatar    String    @db.VarChar(512)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([deletedAt])
+}
+
+model Contact {
+  id          String    @id @default(uuid())
+  name        String
+  email       String
+  phone       String
+  serviceType String
+  date        String?
+  message     String    @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  @@index([deletedAt])
+}
+
+model Booking {
+  id        String    @id @default(uuid())
+  name      String
+  email     String
+  phone     String
+  eventDate String
+  eventType String
+  message   String    @db.Text
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([deletedAt])
+}
+
+model Team {
+  id        String    @id @default(uuid())
+  name      String
+  role      String
+  bio       String    @db.Text
+  imageUrl  String    @db.VarChar(512)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([deletedAt])
+}
+
+model Award {
+  id           String    @id @default(uuid())
+  title        String
+  category     String
+  year         String
+  organization String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  @@index([deletedAt])
+}
+
+model AboutContent {
+  id                    String    @id @default(uuid())
+  heroTitle             String
+  heroSubtitle          String
+  heroDescription       String    @db.Text
+  heroImage             String    @db.VarChar(512)
+  founderTitle          String
+  founderSubtitle       String
+  founderStory          Json      // JSON array of string paragraphs
+  founderImageSujay     String    @db.VarChar(512)
+  founderImageShreyanka String    @db.VarChar(512)
+  missionTitle          String
+  missionDescription    String    @db.Text
+  visionTitle           String
+  visionDescription     String    @db.Text
+  timeline              Json      // JSON array of TimelineEvent { year, title, description }
+  process               Json      // JSON array of ProcessStep { step, title, description }
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  deletedAt             DateTime?
+
+  @@index([deletedAt])
+}
