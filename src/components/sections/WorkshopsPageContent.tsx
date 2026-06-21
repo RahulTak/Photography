@@ -2,10 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { z } from "zod";
-import { apiService } from "@/services/api-client";
+import { useWorkshops, useRegisterWorkshop } from "@/hooks/useWorkshops";
 import { useUIStore } from "@/store/useUIStore";
 import { WORKSHOPS_CONTENT } from "@/constants/workshops";
 import { PageWrapper } from "@/components/layouts/PageWrapper";
@@ -34,7 +33,6 @@ type BookingFormInputs = z.infer<typeof bookingSchema>;
 
 export function WorkshopsPageContent() {
   const searchParams = useSearchParams();
-  const queryClient = useQueryClient();
   const {
     activeWorkshopId,
     setActiveWorkshopId,
@@ -62,23 +60,10 @@ export function WorkshopsPageContent() {
   }, [searchParams, setActiveWorkshopId]);
 
   // Fetch workshops via React Query
-  const { data: workshops = [], isLoading } = useQuery({
-    queryKey: ["workshops"],
-    queryFn: apiService.getWorkshops,
-  });
+  const { data: workshops = [], isLoading } = useWorkshops();
 
   // Booking seat mutation via React Query
-  const bookingMutation = useMutation({
-    mutationFn: (payload: BookingFormInputs & { workshopId: string }) =>
-      apiService.bookWorkshop(payload),
-    onSuccess: (data) => {
-      // Invalidate query to refetch updated seat counts
-      queryClient.invalidateQueries({ queryKey: ["workshops"] });
-      // Reset Form values
-      setFormValues({ name: "", email: "", phone: "", seats: 1 });
-      setFormErrors({});
-    },
-  });
+  const bookingMutation = useRegisterWorkshop();
 
   const activeWorkshop = workshops.find((w) => w.id === activeWorkshopId);
   const bookingWorkshop = workshops.find((w) => w.id === bookingWorkshopId);
@@ -104,6 +89,11 @@ export function WorkshopsPageContent() {
     bookingMutation.mutate({
       ...formValues,
       workshopId: bookingWorkshopId,
+    }, {
+      onSuccess: () => {
+        setFormValues({ name: "", email: "", phone: "", seats: 1 });
+        setFormErrors({});
+      }
     });
   };
 

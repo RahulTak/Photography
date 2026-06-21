@@ -4,13 +4,15 @@ import React from "react";
 import { motion } from "framer-motion";
 import { fadeUp, stagger } from "@/constants/animations";
 import { ABOUT_CONTENT } from "@/constants/about";
+import { useAboutData } from "@/hooks/useAbout";
 import { HOME_CONTENT } from "@/constants/content";
 import { PageWrapper } from "@/components/layouts/PageWrapper";
 import { Award, Compass, Heart, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 
 export function AboutPageContent() {
-  const { hero, founders, missionVision, timeline, awards, team, process } = ABOUT_CONTENT;
+  const { data: aboutData } = useAboutData();
+  const { hero, founders, missionVision, timeline, awards, team, process } = aboutData || ABOUT_CONTENT;
   const stats = HOME_CONTENT.stats;
 
   return (
@@ -52,7 +54,7 @@ export function AboutPageContent() {
                   className="aspect-[3/4] bg-cover bg-center border border-luxury-border rounded-sm shadow-xl"
                   style={{ backgroundImage: `url('${founders.images.sujay}')` }}
                 />
-                <span className="text-[10px] uppercase tracking-widest text-luxury-accent font-sans text-center">Sujay Naidu</span>
+                <span className="text-[10px] uppercase tracking-widest text-luxury-accent font-sans text-center">Jay Prakash</span>
               </motion.div>
 
               <motion.div
@@ -66,7 +68,7 @@ export function AboutPageContent() {
                   className="aspect-[3/4] bg-cover bg-center border border-luxury-border rounded-sm shadow-xl"
                   style={{ backgroundImage: `url('${founders.images.shreyanka}')` }}
                 />
-                <span className="text-[10px] uppercase tracking-widest text-luxury-accent font-sans text-center">Shreyanka Naidu</span>
+                <span className="text-[10px] uppercase tracking-widest text-luxury-accent font-sans text-center">Behind the Lens</span>
               </motion.div>
             </div>
 
@@ -79,7 +81,7 @@ export function AboutPageContent() {
               className="flex flex-col space-y-6"
             >
               <motion.span variants={fadeUp} className="text-xs uppercase tracking-widest text-luxury-accent font-semibold">
-                THE FOUNDING DUO
+                THE FOUNDER
               </motion.span>
               
               <motion.h2 variants={fadeUp} className="text-3xl md:text-5xl font-serif text-white leading-tight">

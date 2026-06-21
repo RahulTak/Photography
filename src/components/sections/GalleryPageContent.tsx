@@ -2,9 +2,8 @@
 
 import React, { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { useInfiniteQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { apiService } from "@/services/api-client";
+import { useGalleryInfinite } from "@/hooks/useGallery";
 import { useUIStore } from "@/store/useUIStore";
 import { GALLERY_CATEGORIES } from "@/constants/gallery";
 import { PageWrapper } from "@/components/layouts/PageWrapper";
@@ -42,14 +41,7 @@ export function GalleryPageContent() {
     hasNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useInfiniteQuery({
-    queryKey: ["gallery", activeCategory],
-    queryFn: ({ pageParam = 1 }) => apiService.getGallery(activeCategory, pageParam, 6),
-    initialPageParam: 1,
-    getNextPageParam: (lastPage, allPages) => {
-      return lastPage.hasMore ? allPages.length + 1 : undefined;
-    },
-  });
+  } = useGalleryInfinite(activeCategory, 6);
 
   // Flattened array of all items loaded so far
   const items = data ? data.pages.flatMap((page) => page.items) : [];

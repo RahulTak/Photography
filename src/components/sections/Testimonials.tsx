@@ -5,9 +5,11 @@ import { motion } from "framer-motion";
 import { fadeUp, stagger } from "@/constants/animations";
 import { HOME_CONTENT } from "@/constants/content";
 import { Quote } from "lucide-react";
+import { useTestimonials } from "@/hooks/useTestimonials";
 
 export function Testimonials() {
-  const testimonials = HOME_CONTENT.testimonials;
+  const { data: testimonialsData } = useTestimonials();
+  const testimonials = testimonialsData || HOME_CONTENT.testimonials;
 
   return (
     <section className="py-24 bg-luxury-sec border-t border-luxury-border/30">

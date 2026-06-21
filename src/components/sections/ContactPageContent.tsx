@@ -1,24 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { z } from "zod";
-import { apiService } from "@/services/api-client";
+import { contactSchema, ContactFormInputs } from "@/schemas/contact.schema";
+import { useSubmitContact } from "@/hooks/useContact";
 import { CONTACT_CONTENT } from "@/constants/contact";
 import { PageWrapper } from "@/components/layouts/PageWrapper";
 import { MapPin, Phone, Mail, Clock, Check, Send } from "lucide-react";
-
-// Zod validation schema for contact inputs
-const contactSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  email: z.string().email({ message: "Please enter a valid email address." }),
-  phone: z.string().min(10, { message: "Please enter a valid 10-digit phone number." }),
-  serviceType: z.string().min(1, { message: "Please select a service type." }),
-  date: z.string().optional(),
-  message: z.string().min(10, { message: "Message must be at least 10 characters." }),
-});
-
-type ContactFormInputs = z.infer<typeof contactSchema>;
 
 export function ContactPageContent() {
   const { hero, info, socials, mapPlaceholder } = CONTACT_CONTENT;
@@ -35,21 +22,7 @@ export function ContactPageContent() {
   const [formErrors, setFormErrors] = useState<Partial<Record<keyof ContactFormInputs, string>>>({});
 
   // Query Mutation for Contact Submission
-  const contactMutation = useMutation({
-    mutationFn: apiService.submitContact,
-    onSuccess: () => {
-      // Clear form inputs
-      setFormValues({
-        name: "",
-        email: "",
-        phone: "",
-        serviceType: "",
-        date: "",
-        message: "",
-      });
-      setFormErrors({});
-    },
-  });
+  const contactMutation = useSubmitContact();
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,7 +41,19 @@ export function ContactPageContent() {
     }
 
     setFormErrors({});
-    contactMutation.mutate(formValues);
+    contactMutation.mutate(formValues, {
+      onSuccess: () => {
+        setFormValues({
+          name: "",
+          email: "",
+          phone: "",
+          serviceType: "",
+          date: "",
+          message: "",
+        });
+        setFormErrors({});
+      }
+    });
   };
 
   return (
