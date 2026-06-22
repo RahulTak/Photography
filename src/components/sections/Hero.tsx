@@ -5,9 +5,12 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { fadeUp, stagger } from "@/constants/animations";
 import { HOME_CONTENT } from "@/constants/content";
+import { useHomeContent } from "@/hooks/useHomeContent";
 
 export function Hero() {
-  const { title, subtitle, description, ctaPrimary, ctaSecondary, videoPlaceholderImg } = HOME_CONTENT.hero;
+  const { data: homeContent } = useHomeContent();
+  const hero = homeContent?.hero || HOME_CONTENT.hero;
+  const { title, subtitle, description, ctaPrimary, ctaSecondary, videoPlaceholderImg } = hero;
 
   return (
     <section className="relative h-[95vh] w-full flex items-center justify-center overflow-hidden">

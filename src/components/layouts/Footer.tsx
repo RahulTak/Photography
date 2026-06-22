@@ -6,10 +6,24 @@ import { NAV_LINKS, ROUTES } from "@/constants/routes";
 import { CONTACT_CONTENT } from "@/constants/contact";
 import { GALLERY_CATEGORIES } from "@/constants/gallery";
 import { ArrowRight } from "lucide-react";
+import { useAdminSettings } from "@/hooks/admin/useAdmin";
 
 export function Footer() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+
+  const { data: settingsRes } = useAdminSettings();
+  const settings = settingsRes?.data || {};
+
+  const address = settings.address || CONTACT_CONTENT.info.address;
+  const phone = settings.telephone || CONTACT_CONTENT.info.phone;
+  const emailVal = settings.email || CONTACT_CONTENT.info.email;
+
+  const socialsList = [
+    { name: "Instagram", url: settings.instagram || CONTACT_CONTENT.socials.find(s => s.name === "Instagram")?.url || "" },
+    { name: "YouTube", url: settings.youtube || CONTACT_CONTENT.socials.find(s => s.name === "YouTube")?.url || "" },
+    { name: "Facebook", url: settings.facebook || CONTACT_CONTENT.socials.find(s => s.name === "Facebook")?.url || "" },
+  ].filter(s => s.url);
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,9 +127,9 @@ export function Footer() {
             )}
           </div>
           <div className="text-[10px] text-luxury-muted space-y-1 font-sans leading-relaxed pt-2">
-            <p className="font-semibold text-white/90">HQ: {CONTACT_CONTENT.info.address}</p>
-            <p>Tel: {CONTACT_CONTENT.info.phone}</p>
-            <p>Mail: {CONTACT_CONTENT.info.email}</p>
+            <p className="font-semibold text-white/90">HQ: {address}</p>
+            <p>Tel: {phone}</p>
+            <p>Mail: {emailVal}</p>
           </div>
         </div>
       </div>
@@ -124,7 +138,7 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-6 md:px-12 pt-8 border-t border-luxury-border/30 flex flex-col md:flex-row items-center justify-between gap-4 text-[10px] text-luxury-muted font-sans">
         <p>&copy; {new Date().getFullYear()} JP Click Studio. All rights reserved.</p>
         <div className="flex space-x-6">
-          {CONTACT_CONTENT.socials.map((social) => (
+          {socialsList.map((social) => (
             <a key={social.name} href={social.url} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors duration-300">
               {social.name}
             </a>

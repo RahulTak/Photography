@@ -69,6 +69,19 @@ export const galleryService = {
       console.warn("Categories API failed: returning local fallback constants.");
       return [...GALLERY_CATEGORIES];
     }
+  },
+  
+  createGalleryItem: async (payload: any): Promise<any> => {
+    const response = await apiClient.post(API_ENDPOINTS.GALLERY, payload);
+    return response.data;
+  },
+  updateGalleryItem: async (id: string, payload: any): Promise<any> => {
+    const response = await apiClient.put(`${API_ENDPOINTS.GALLERY}/${id}`, payload);
+    return response.data;
+  },
+  deleteGalleryItem: async (id: string): Promise<any> => {
+    const response = await apiClient.delete(`${API_ENDPOINTS.GALLERY}/${id}`);
+    return response.data;
   }
 };
 export default galleryService;

@@ -95,6 +95,7 @@ model Contact {
   serviceType String
   date        String?
   message     String    @db.Text
+  status      String    @default("unread")
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
@@ -110,6 +111,7 @@ model Booking {
   eventDate String
   eventType String
   message   String    @db.Text
+  status    String    @default("pending")
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
@@ -165,4 +167,63 @@ model AboutContent {
   deletedAt             DateTime?
 
   @@index([deletedAt])
+}
+
+model AdminUser {
+  id           String        @id @default(uuid())
+  name         String
+  email        String        @unique
+  password     String
+  role         String        @default("admin")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  deletedAt    DateTime?
+  activityLogs ActivityLog[]
+
+  @@index([email])
+}
+
+model SiteSettings {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model HomeContent {
+  id                  String    @id @default(uuid())
+  heroTitle           String
+  heroSubtitle        String
+  heroDescription     String    @db.Text
+  heroImage           String    @db.VarChar(512)
+  heroCtaPrimary      String    @default("View Portfolio")
+  heroCtaSecondary    String    @default("Book Consultation")
+  aboutTag            String    @default("THE SPARK")
+  aboutTitle          String
+  aboutDescription    String    @db.Text
+  aboutFounder        String    @default("Jay Prakash")
+  aboutFounderTitle   String    @default("Lead Storyteller")
+  aboutPortraitImg    String    @db.VarChar(512)
+  aboutCtaText        String    @default("Discover Our Story")
+  whyChooseUsTag      String    @default("OUR CRAFT")
+  whyChooseUsTitle    String
+  whyChooseUsFeatures Json      // Array of feature { id, title, description }
+  stats               Json      // Array of stat { value, label }
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  deletedAt           DateTime?
+}
+
+model ActivityLog {
+  id          String     @id @default(uuid())
+  adminUserId String?
+  adminUser   AdminUser? @relation(fields: [adminUserId], references: [id])
+  action      String     
+  details     String     @db.Text
+  ipAddress   String?
+  createdAt   DateTime   @default(now())
+
+  @@index([adminUserId])
+  @@index([createdAt])
 }

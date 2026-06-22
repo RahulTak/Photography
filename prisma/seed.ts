@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 import { GALLERY_ITEMS } from "../src/constants/gallery";
 import { WORKSHOPS_CONTENT } from "../src/constants/workshops";
 import { ABOUT_CONTENT } from "../src/constants/about";
@@ -8,6 +9,20 @@ const prisma = new PrismaClient();
 
 async function main() {
   console.log("Starting DB seeding...");
+
+  // 0. Seed Default Admin User
+  const hashedDefaultPass = await bcrypt.hash("AdminPass123!", 10);
+  await prisma.adminUser.upsert({
+    where: { email: "admin@jpphotography.in" },
+    update: {},
+    create: {
+      email: "admin@jpphotography.in",
+      name: "Jay Prakash",
+      password: hashedDefaultPass,
+      role: "admin",
+    },
+  });
+  console.log("Seeded default admin user.");
 
   // 1. Seed Gallery Categories and Items
   for (const item of GALLERY_ITEMS) {

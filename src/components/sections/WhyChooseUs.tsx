@@ -4,10 +4,13 @@ import React from "react";
 import { motion } from "framer-motion";
 import { fadeUp, stagger } from "@/constants/animations";
 import { HOME_CONTENT } from "@/constants/content";
+import { useHomeContent } from "@/hooks/useHomeContent";
 import { Camera, Sparkles, Award, Globe } from "lucide-react";
 
 export function WhyChooseUs() {
-  const { tag, title, features } = HOME_CONTENT.whyChooseUs;
+  const { data: homeContent } = useHomeContent();
+  const whyChooseUs = homeContent?.whyChooseUs || HOME_CONTENT.whyChooseUs;
+  const { tag, title, features } = whyChooseUs;
 
   // Icon mapper
   const getIcon = (id: string) => {
@@ -44,7 +47,7 @@ export function WhyChooseUs() {
           viewport={{ once: true, margin: "-100px" }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
         >
-          {features.map((feat) => (
+          {features.map((feat: any) => (
             <motion.div
               key={feat.id}
               variants={fadeUp}

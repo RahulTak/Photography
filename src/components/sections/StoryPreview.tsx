@@ -5,9 +5,12 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { fadeUp } from "@/constants/animations";
 import { HOME_CONTENT } from "@/constants/content";
+import { useHomeContent } from "@/hooks/useHomeContent";
 
 export function StoryPreview() {
-  const { tag, title, description, founders, foundersTitle, portraitImg, ctaText } = HOME_CONTENT.aboutPreview;
+  const { data: homeContent } = useHomeContent();
+  const aboutPreview = homeContent?.aboutPreview || HOME_CONTENT.aboutPreview;
+  const { tag, title, description, founders, foundersTitle, portraitImg, ctaText } = aboutPreview;
 
   return (
     <section className="py-24 bg-luxury-sec border-t border-luxury-border/30">
