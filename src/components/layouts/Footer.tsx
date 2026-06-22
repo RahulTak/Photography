@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { NAV_LINKS, ROUTES } from "@/constants/routes";
 import { CONTACT_CONTENT } from "@/constants/contact";
@@ -9,8 +9,13 @@ import { ArrowRight } from "lucide-react";
 import { useAdminSettings } from "@/hooks/admin/useAdmin";
 
 export function Footer() {
+  const [mounted, setMounted] = useState(false);
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const { data: settingsRes } = useAdminSettings();
   const settings = settingsRes?.data || {};
@@ -33,6 +38,10 @@ export function Footer() {
       setTimeout(() => setSubmitted(false), 4000);
     }
   };
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <footer className="bg-luxury-sec border-t border-luxury-border/60 text-white pt-20 pb-10">
