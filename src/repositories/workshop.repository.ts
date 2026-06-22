@@ -37,6 +37,12 @@ export const workshopRepository = {
         id,
         deletedAt: null,
       },
+      include: {
+        registrations: {
+          where: { deletedAt: null },
+          orderBy: { createdAt: "desc" },
+        },
+      },
     });
 
     if (!w) return null;
@@ -56,6 +62,14 @@ export const workshopRepository = {
       location: w.location,
       image: w.image,
       syllabus: Array.isArray(w.syllabus) ? (w.syllabus as string[]) : [],
+      registrations: w.registrations.map((r) => ({
+        id: r.id,
+        name: r.name,
+        email: r.email,
+        phone: r.phone,
+        seats: r.seats,
+        createdAt: r.createdAt,
+      })),
     };
   },
 

@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAdminLogin } from "@/hooks/admin/useAdmin";
 import { KeyRound, Mail, Loader2, ShieldAlert } from "lucide-react";
+import { HOME_CONTENT } from "@/constants/content";
+import Image from "next/image";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -12,6 +14,7 @@ export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const title = HOME_CONTENT.hero.title;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,11 +46,17 @@ export default function AdminLoginPage() {
       <div className="max-w-md w-full bg-[#151515] border border-white/5 rounded-sm p-8 shadow-2xl relative">
         {/* Monogram Brand Header */}
         <div className="text-center space-y-3 mb-8">
-          <div className="w-12 h-12 rounded-sm bg-luxury-accent/10 border border-luxury-accent/30 flex items-center justify-center text-luxury-accent mx-auto">
-            <KeyRound size={22} />
+          <div className="w-12 h-12 rounded-sm bg-luxury-accent/10 border border-luxury-accent/30 flex items-center justify-center text-luxury-accent mx-auto overflow-hidden">
+            <Image
+              src="/logo.png"
+              alt="Logo"
+              width={48}
+              height={48}
+              className="w-full h-full object-contain"
+            />
           </div>
           <div>
-            <h1 className="font-serif font-bold text-2xl tracking-wide uppercase">JP PHOTOGRAPHY</h1>
+            <h1 className="font-serif font-bold text-2xl tracking-wide uppercase">{title}</h1>
             <span className="text-[10px] uppercase tracking-widest text-luxury-accent font-semibold block mt-0.5">
               Secure Administration Console
             </span>

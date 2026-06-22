@@ -2,7 +2,11 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { verifyJWT } from "@/lib/jwt";
 
-export async function middleware(req: NextRequest) {
+/**
+ * Next.js 16 Proxy layer (acting as dynamic request interceptor and middleware proxy boundary).
+ * Verifies cookies, intercepts admin routes, and protects write APIs from unauthorized operations.
+ */
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const token = req.cookies.get("admin_token")?.value;
 
@@ -39,9 +43,10 @@ export async function middleware(req: NextRequest) {
         "/api/contact",
         "/api/bookings",
         "/api/workshops/register",
+        "/api/admin/auth/login", // EXCLUDE login from session check to avoid chicken-and-egg block!
       ];
       
-      // Check if it's a public form submission
+      // Check if it's a public form submission or login request
       if (publicAPIPaths.some((path) => pathname === path)) {
         return NextResponse.next();
       }
