@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: "Reserve Your Date | Contact Us",
   description: "Check our wedding dates availability. Fill out our contact form to speak with our studio coordinator and schedule a consultation in Nagaur, Rajasthan.",
   openGraph: {
-    title: "Contact Us | JP Photography",
+    title: "Contact Us | JP Click Studio",
     description: "Submit your inquiry details and verify date availability for luxury film and photography commissions.",
     url: "https://jpphotography.in/contact",
   },

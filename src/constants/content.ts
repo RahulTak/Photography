@@ -1,6 +1,6 @@
 export const HOME_CONTENT = {
   hero: {
-    title: "JP Photography",
+    title: "JP Click Studio",
     subtitle: "We Capture Fleeting Sparks of Human Emotion",
     description: "Multi-award-winning premium wedding filmmakers and luxury storytellers based in Rajasthan. Crafting editorial, cinematic memories that last a lifetime.",
     ctaPrimary: "View Portfolio",
@@ -10,7 +10,7 @@ export const HOME_CONTENT = {
   aboutPreview: {
     tag: "THE SPARK",
     title: "Fleeting Moments, Captured Eternally",
-    description: "JP Photography was founded on a simple philosophy: the most profound human emotions are beautiful, momentary sparks. We make them timeless through fine-art storytelling.",
+    description: "JP Click Studio was founded on a simple philosophy: the most profound human emotions are beautiful, momentary sparks. We make them timeless through fine-art storytelling.",
     founders: "Jay Prakash",
     foundersTitle: "Lead Storyteller",
     portraitImg: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=800&auto=format&fit=crop",
@@ -18,7 +18,7 @@ export const HOME_CONTENT = {
   },
   whyChooseUs: {
     tag: "OUR CRAFT",
-    title: "Why Elite Couples Choose JP Photography",
+    title: "Why Elite Couples Choose JP Click Studio",
     features: [
       {
         id: "editorial",
@@ -62,7 +62,7 @@ export const HOME_CONTENT = {
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=300",
     },
     {
-      quote: "From our pre-wedding cinematic trailer to our traditional reception in Jaipur, the color grading and storytelling style of JP Photography were stunning. They are the benchmark of wedding art.",
+      quote: "From our pre-wedding cinematic trailer to our traditional reception in Jaipur, the color grading and storytelling style of JP Click Studio were stunning. They are the benchmark of wedding art.",
       author: "Diya & Kedar",
       role: "Rambagh Palace, Jaipur",
       avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=300",

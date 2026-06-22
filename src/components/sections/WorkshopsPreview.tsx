@@ -19,7 +19,7 @@ export function WorkshopsPreview() {
           {/* Text Info */}
           <div className="flex flex-col space-y-6">
             <span className="text-xs uppercase tracking-widest text-luxury-accent font-semibold" style={{ letterSpacing: "0.2em" }}>
-              JP PHOTOGRAPHY MASTERCLASSES
+              JP Click Studio MASTERCLASSES
             </span>
             <h2 className="text-3xl md:text-5xl font-serif text-white leading-tight">
               Elevate Your Photographic Eye

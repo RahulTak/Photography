@@ -271,7 +271,7 @@ export function ContactPageContent() {
             {/* Google Maps IFrame Placeholder */}
             <div className="border border-luxury-border/60 rounded-sm overflow-hidden aspect-[16/10] relative shadow-lg">
               <iframe
-                title="JP Photography Map Locator"
+                title="JP Click Studio Map Locator"
                 src={mapPlaceholder.embedUrl}
                 width="100%"
                 height="100%"

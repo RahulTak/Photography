@@ -57,7 +57,7 @@ export function AboutPageContent() {
                 <span className="text-[10px] uppercase tracking-widest text-luxury-accent font-sans text-center">Jay Prakash</span>
               </motion.div>
 
-              <motion.div
+              {/* <motion.div
                 initial={{ opacity: 0, y: -30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -69,7 +69,7 @@ export function AboutPageContent() {
                   style={{ backgroundImage: `url('${founders.images.shreyanka}')` }}
                 />
                 <span className="text-[10px] uppercase tracking-widest text-luxury-accent font-sans text-center">Behind the Lens</span>
-              </motion.div>
+              </motion.div> */}
             </div>
 
             {/* Founders copy */}

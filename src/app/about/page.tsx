@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: "Our Story & Legacy | Luxury Wedding Photographers",
   description: "Learn more about Jay Prakash, our fine art storytelling ethos, awards, milestones, and the specialized production team.",
   openGraph: {
-    title: "About Us | JP Photography",
+    title: "About Us | JP Click Studio",
     description: "Learn more about our decadal history, co-creators, and fine art wedding philosophy.",
     url: "https://jpphotography.in/about",
   },

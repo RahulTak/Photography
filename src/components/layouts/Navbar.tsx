@@ -29,7 +29,7 @@ export function Navbar() {
           <Link href="/" className="flex items-center gap-3 group">
             <img
               src="/logo.png"
-              alt="JP Photography Logo"
+              alt="JP Click Studio Logo"
               className="h-10 w-10 object-contain rounded-sm border border-luxury-border/60 transition-transform duration-500 group-hover:scale-105"
             />
             <div className="flex flex-col">
@@ -37,7 +37,7 @@ export function Navbar() {
                 className="font-serif text-lg font-bold tracking-widest text-white leading-none group-hover:text-luxury-accent transition-colors duration-300"
                 style={{ letterSpacing: "0.12em" }}
               >
-                JP PHOTOGRAPHY
+                JP Click Studio
               </span>
               <span
                 className="text-[7px] tracking-widest uppercase text-luxury-accent/80 mt-1.5 leading-none"

@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: "Photography Masterclasses & Workshops",
   description: "Learn luxury wedding photography and cinematic filmmaking directly from Jay Prakash. Practical residencies in lighting, grading, and business growth.",
   openGraph: {
-    title: "Masterclasses & Workshops | JP Photography",
+    title: "Masterclasses & Workshops | JP Click Studio",
     description: "Learn lighting, cinematography, and high-net-worth client strategies.",
     url: "https://jpphotography.in/workshops",
   },

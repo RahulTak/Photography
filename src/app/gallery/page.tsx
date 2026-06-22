@@ -4,9 +4,9 @@ import { GalleryPageContent } from "@/components/sections/GalleryPageContent";
 
 export const metadata: Metadata = {
   title: "Portfolio Vault | Luxury Photography Showcase",
-  description: "Browse our wedding, pre-wedding, cinematic, traditional, and destination wedding photography portfolios. Experience luxury storytelling captured by JP Photography.",
+  description: "Browse our wedding, pre-wedding, cinematic, traditional, and destination wedding photography portfolios. Experience luxury storytelling captured by JP Click Studio.",
   openGraph: {
-    title: "Portfolio Vault | JP Photography",
+    title: "Portfolio Vault | JP Click Studio",
     description: "Browse our global wedding and pre-wedding photography portfolios.",
     url: "https://jpphotography.in/gallery",
   },

@@ -4,14 +4,14 @@ export const ABOUT_CONTENT = {
   hero: {
     title: "Documenting Life's Electric Fleeting Moments",
     subtitle: "Behind the Lens",
-    description: "JP Photography is a premier boutique photography and cinematography studio founded on the belief that raw human connection is the highest form of art.",
+    description: "JP Click Studio is a premier boutique photography and cinematography studio founded on the belief that raw human connection is the highest form of art.",
     image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1200",
   },
   founders: {
     title: "Jay Prakash",
     subtitle: "Founder & Lead Luxury Storyteller",
     storyParagraphs: [
-      "JP Photography is the creative vision of Jay Prakash. His journey is driven by an obsession with capturing raw human emotions and freezing fleeting moments of love in timeless editorial frames.",
+      "JP Click Studio is the creative vision of Jay Prakash. His journey is driven by an obsession with capturing raw human emotions and freezing fleeting moments of love in timeless editorial frames.",
       "With over a decade of experience shooting high-profile destination weddings across India and globally, Jay Prakash combines the precise control of editorial studio lighting with the pristine elegance of candid fine-art storytelling.",
       "Today, he guides a highly specialized team of cinematographers and color editors, infusing wedding storytelling with the velocity of composition and the pristine elegance of runway high fashion."
     ],
@@ -34,7 +34,7 @@ export const ABOUT_CONTENT = {
     {
       year: "2011",
       title: "The Genesis",
-      description: "Jay Prakash establishes JP Photography, focusing on raw candid wedding films in Rajasthan and New Delhi.",
+      description: "Jay Prakash establishes JP Click Studio, focusing on raw candid wedding films in Rajasthan and New Delhi.",
     },
     {
       year: "2014",
@@ -44,7 +44,7 @@ export const ABOUT_CONTENT = {
     {
       year: "2018",
       title: "Decadal Benchmarks",
-      description: "Named 'Top 10 Wedding Photographers in India' by Better Photography. JP Photography opens its flagship private consultation lounge.",
+      description: "Named 'Top 10 Wedding Photographers in India' by Better Photography. JP Click Studio opens its flagship private consultation lounge.",
     },
     {
       year: "2022",

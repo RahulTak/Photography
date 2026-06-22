@@ -3,7 +3,7 @@ import { Workshop } from "@/types";
 export const WORKSHOPS_CONTENT = {
   hero: {
     title: "Master the Art of Light & Motion",
-    subtitle: "JP Photography Masterclasses",
+    subtitle: "JP Click Studio Masterclasses",
     description: "Go behind the scenes of luxury wedding cinematography and editorial photography. Learn composition, cinematic color grading, client storytelling, and business strategy directly from Jay Prakash.",
   },
   benefits: [
@@ -69,7 +69,7 @@ export const WORKSHOPS_CONTENT = {
     },
     {
       question: "Is there a certificate provided?",
-      answer: "Yes, a physical signed certificate from JP Photography is awarded to attendees at the completion of either residency class.",
+      answer: "Yes, a physical signed certificate from JP Click Studio is awarded to attendees at the completion of either residency class.",
     },
   ],
   upcoming: [
@@ -85,7 +85,7 @@ export const WORKSHOPS_CONTENT = {
       seatsTotal: 15,
       seatsAvailable: 3,
       instructor: "Jay Prakash",
-      location: "JP Photography Studio, Near Sharda Bal School, Nagaur, Rajasthan",
+      location: "JP Click Studio Studio, Sharda Puram, Nagaur, Rajasthan",
       image: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=800",
       syllabus: [
         "Understanding lighting angles and light qualities",

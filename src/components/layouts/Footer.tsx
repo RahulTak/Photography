@@ -28,7 +28,7 @@ export function Footer() {
           <Link href="/" className="flex items-center gap-3 group">
             <img
               src="/logo.png"
-              alt="JP Photography Logo"
+              alt="JP Click Studio Logo"
               className="h-10 w-10 object-contain rounded-sm border border-luxury-border/60 transition-transform duration-500 group-hover:scale-105"
             />
             <div className="flex flex-col">
@@ -36,7 +36,7 @@ export function Footer() {
                 className="font-serif text-lg font-bold tracking-widest text-white leading-none group-hover:text-luxury-accent transition-colors duration-300"
                 style={{ letterSpacing: "0.12em" }}
               >
-                JP PHOTOGRAPHY
+                JP Click Studio
               </span>
               <span
                 className="text-[7px] tracking-widest uppercase text-luxury-accent/85 mt-1.5 leading-none"
@@ -122,7 +122,7 @@ export function Footer() {
 
       {/* Bottom Copyright */}
       <div className="max-w-7xl mx-auto px-6 md:px-12 pt-8 border-t border-luxury-border/30 flex flex-col md:flex-row items-center justify-between gap-4 text-[10px] text-luxury-muted font-sans">
-        <p>&copy; {new Date().getFullYear()} JP Photography. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} JP Click Studio. All rights reserved.</p>
         <div className="flex space-x-6">
           {CONTACT_CONTENT.socials.map((social) => (
             <a key={social.name} href={social.url} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors duration-300">
