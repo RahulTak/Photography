@@ -52,7 +52,7 @@ export default function AdminLoginPage() {
               alt="Logo"
               width={48}
               height={48}
-              className="w-full h-full object-contain"
+              className="w-full h-full bg-white object-contain"
             />
           </div>
           <div>

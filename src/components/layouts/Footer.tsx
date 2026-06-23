@@ -52,7 +52,7 @@ export function Footer() {
             <img
               src="/logo.png"
               alt="JP Click Studio Logo"
-              className="h-10 w-10 object-contain rounded-sm border border-luxury-border/60 transition-transform duration-500 group-hover:scale-105"
+              className="h-10 w-10 bg-white object-contain rounded-sm border border-luxury-border/60 transition-transform duration-500 group-hover:scale-105"
             />
             <div className="flex flex-col">
               <span
