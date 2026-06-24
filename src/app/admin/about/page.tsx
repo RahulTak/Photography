@@ -4,11 +4,25 @@ import React, { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { ImageUploader } from "@/components/admin/ImageUploader";
+import { ConfirmModal } from "@/components/admin/ConfirmModal";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import axios from "axios";
-import { Loader2, Save, CheckCircle, X, Plus } from "lucide-react";
+import {
+  Loader2,
+  Save,
+  CheckCircle,
+  X,
+  Plus,
+  Edit2,
+  Trash2,
+  Users,
+  Award,
+  ChevronUp,
+  ChevronDown,
+  Info,
+} from "lucide-react";
 
 // About page validation schema
 const aboutSchema = z.object({
@@ -37,16 +51,64 @@ const aboutSchema = z.object({
       description: z.string().min(5, "Vision description is required"),
     }),
   }),
+  stats: z.array(z.object({
+    value: z.string().min(1, "Stat value is required"),
+    label: z.string().min(2, "Stat label is required"),
+  })),
+  timeline: z.array(z.object({
+    year: z.string().min(4, "Year is required"),
+    title: z.string().min(2, "Milestone title is required"),
+    description: z.string().min(5, "Milestone description is required"),
+  })),
 });
 
 type AboutFormInputs = z.infer<typeof aboutSchema>;
 
 export default function AdminAboutPage() {
   const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState<"content" | "team" | "awards">("content");
+  
+  // Custom arrays for dynamic form controls
   const [storyInputs, setStoryInputs] = useState<string[]>([""]);
+  const [timelineInputs, setTimelineInputs] = useState<{ year: string; title: string; description: string }[]>([]);
+  const [statsInputs, setStatsInputs] = useState<{ value: string; label: string }[]>([]);
 
-  // Fetch current about copy
-  const { data: aboutRes, isLoading } = useQuery({
+  // Team Management states
+  const [isTeamFormOpen, setIsTeamFormOpen] = useState(false);
+  const [editingTeamMember, setEditingTeamMember] = useState<any>(null);
+  const [deletingTeamId, setDeletingTeamId] = useState<string | null>(null);
+  const [isTeamDeleteOpen, setIsTeamDeleteOpen] = useState(false);
+  const [teamForm, setTeamForm] = useState({
+    name: "",
+    role: "",
+    bio: "",
+    imageUrl: "",
+    sortOrder: 0,
+    active: true,
+  });
+
+  // Awards Management states
+  const [isAwardFormOpen, setIsAwardFormOpen] = useState(false);
+  const [editingAward, setEditingAward] = useState<any>(null);
+  const [deletingAwardId, setDeletingAwardId] = useState<string | null>(null);
+  const [isAwardDeleteOpen, setIsAwardDeleteOpen] = useState(false);
+  const [awardForm, setAwardForm] = useState({
+    title: "",
+    category: "",
+    year: "",
+    organization: "",
+    imageUrl: "",
+    description: "",
+    sortOrder: 0,
+    active: true,
+  });
+
+  // ==========================================
+  // Fetching Data Queries
+  // ==========================================
+  
+  // Fetch About page copy
+  const { data: aboutRes, isLoading: isAboutLoading } = useQuery({
     queryKey: ["adminAbout"],
     queryFn: async () => {
       const response = await axios.get("/api/about");
@@ -54,6 +116,30 @@ export default function AdminAboutPage() {
     },
   });
 
+  // Fetch Team members (includes active/inactive)
+  const { data: teamRes, isLoading: isTeamLoading, refetch: refetchTeam } = useQuery({
+    queryKey: ["adminTeam"],
+    queryFn: async () => {
+      const response = await axios.get("/api/team");
+      return response.data;
+    },
+  });
+
+  // Fetch Awards (includes active/inactive)
+  const { data: awardsRes, isLoading: isAwardsLoading, refetch: refetchAwards } = useQuery({
+    queryKey: ["adminAwards"],
+    queryFn: async () => {
+      const response = await axios.get("/api/awards");
+      return response.data;
+    },
+  });
+
+  const teamMembers = teamRes?.data || [];
+  const awards = awardsRes?.data || [];
+
+  // ==========================================
+  // Form hooks and useEffect mapping
+  // ==========================================
   const {
     register,
     handleSubmit,
@@ -69,11 +155,13 @@ export default function AdminAboutPage() {
   const founderImageSujay = watch("founders.images.sujay");
   const founderImageShreyanka = watch("founders.images.shreyanka");
 
-  // Load database configs
+  // Load database configs for About Content
   useEffect(() => {
     if (aboutRes?.data) {
       const data = aboutRes.data;
       setStoryInputs(data.founders?.storyParagraphs && data.founders.storyParagraphs.length > 0 ? data.founders.storyParagraphs : [""]);
+      setTimelineInputs(data.timeline || []);
+      setStatsInputs(data.stats || []);
       reset({
         hero: {
           title: data.hero?.title || "",
@@ -100,11 +188,17 @@ export default function AdminAboutPage() {
             description: data.missionVision?.vision?.description || "",
           },
         },
+        stats: data.stats || [],
+        timeline: data.timeline || [],
       });
     }
   }, [aboutRes, reset]);
 
-  // Update about copy mutation
+  // ==========================================
+  // Mutations
+  // ==========================================
+  
+  // 1. Update about copy mutation
   const updateMutation = useMutation({
     mutationFn: async (payload: any) => {
       const response = await axios.put("/api/about", payload);
@@ -113,248 +207,1027 @@ export default function AdminAboutPage() {
     onSuccess: (res) => {
       queryClient.setQueryData(["adminAbout"], res);
       queryClient.invalidateQueries({ queryKey: ["about"] });
+      queryClient.invalidateQueries({ queryKey: ["adminDashboard"] });
     },
   });
 
+  // 2. Team Mutations
+  const createTeamMutation = useMutation({
+    mutationFn: async (payload: any) => {
+      const response = await axios.post("/api/team", payload);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adminTeam"] });
+      queryClient.invalidateQueries({ queryKey: ["adminAbout"] });
+      queryClient.invalidateQueries({ queryKey: ["adminDashboard"] });
+      setIsTeamFormOpen(false);
+      refetchTeam();
+    },
+  });
+
+  const updateTeamMutation = useMutation({
+    mutationFn: async (variables: { id: string; payload: any }) => {
+      const response = await axios.put(`/api/team/${variables.id}`, variables.payload);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adminTeam"] });
+      queryClient.invalidateQueries({ queryKey: ["adminAbout"] });
+      queryClient.invalidateQueries({ queryKey: ["adminDashboard"] });
+      setIsTeamFormOpen(false);
+      refetchTeam();
+    },
+  });
+
+  const deleteTeamMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await axios.delete(`/api/team/${id}`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adminTeam"] });
+      queryClient.invalidateQueries({ queryKey: ["adminAbout"] });
+      queryClient.invalidateQueries({ queryKey: ["adminDashboard"] });
+      setIsTeamDeleteOpen(false);
+      setDeletingTeamId(null);
+      refetchTeam();
+    },
+  });
+
+  // 3. Award Mutations
+  const createAwardMutation = useMutation({
+    mutationFn: async (payload: any) => {
+      const response = await axios.post("/api/awards", payload);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adminAwards"] });
+      queryClient.invalidateQueries({ queryKey: ["adminAbout"] });
+      queryClient.invalidateQueries({ queryKey: ["adminDashboard"] });
+      setIsAwardFormOpen(false);
+      refetchAwards();
+    },
+  });
+
+  const updateAwardMutation = useMutation({
+    mutationFn: async (variables: { id: string; payload: any }) => {
+      const response = await axios.put(`/api/awards/${variables.id}`, variables.payload);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adminAwards"] });
+      queryClient.invalidateQueries({ queryKey: ["adminAbout"] });
+      queryClient.invalidateQueries({ queryKey: ["adminDashboard"] });
+      setIsAwardFormOpen(false);
+      refetchAwards();
+    },
+  });
+
+  const deleteAwardMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const response = await axios.delete(`/api/awards/${id}`);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adminAwards"] });
+      queryClient.invalidateQueries({ queryKey: ["adminAbout"] });
+      queryClient.invalidateQueries({ queryKey: ["adminDashboard"] });
+      setIsAwardDeleteOpen(false);
+      setDeletingAwardId(null);
+      refetchAwards();
+    },
+  });
+
+  // ==========================================
+  // Dynamic Fields Helpers
+  // ==========================================
+  
+  // Story paragraphs
   const handleStoryChange = (index: number, val: string) => {
     const next = [...storyInputs];
     next[index] = val;
     setStoryInputs(next);
-    setValue("founders.storyParagraphs", next.filter((p) => p.trim() !== ""));
+    setValue("founders.storyParagraphs", next.filter((p) => p.trim() !== ""), { shouldDirty: true });
   };
-
-  const addStoryRow = () => {
-    setStoryInputs([...storyInputs, ""]);
-  };
-
+  const addStoryRow = () => setStoryInputs([...storyInputs, ""]);
   const removeStoryRow = (index: number) => {
     const next = storyInputs.filter((_, i) => i !== index);
     setStoryInputs(next.length === 0 ? [""] : next);
-    setValue("founders.storyParagraphs", next.filter((p) => p.trim() !== ""));
+    setValue("founders.storyParagraphs", next.filter((p) => p.trim() !== ""), { shouldDirty: true });
   };
 
-  const onSubmit = (data: AboutFormInputs) => {
-    // Retain timeline and process unchanged since they are configured in DB but not editable in this simple form
+  // Timeline milestones
+  const handleTimelineChange = (index: number, key: "year" | "title" | "description", val: string) => {
+    const next = [...timelineInputs];
+    next[index] = { ...next[index], [key]: val };
+    setTimelineInputs(next);
+    setValue("timeline", next, { shouldDirty: true });
+  };
+  const addTimelineRow = () => {
+    const next = [...timelineInputs, { year: "", title: "", description: "" }];
+    setTimelineInputs(next);
+    setValue("timeline", next, { shouldDirty: true });
+  };
+  const removeTimelineRow = (index: number) => {
+    const next = timelineInputs.filter((_, i) => i !== index);
+    setTimelineInputs(next);
+    setValue("timeline", next, { shouldDirty: true });
+  };
+
+  // Stats Counters
+  const handleStatChange = (index: number, key: "value" | "label", val: string) => {
+    const next = [...statsInputs];
+    next[index] = { ...next[index], [key]: val };
+    setStatsInputs(next);
+    setValue("stats", next, { shouldDirty: true });
+  };
+  const addStatRow = () => {
+    const next = [...statsInputs, { value: "", label: "" }];
+    setStatsInputs(next);
+    setValue("stats", next, { shouldDirty: true });
+  };
+  const removeStatRow = (index: number) => {
+    const next = statsInputs.filter((_, i) => i !== index);
+    setStatsInputs(next);
+    setValue("stats", next, { shouldDirty: true });
+  };
+
+  // ==========================================
+  // CRUD Actions Handles
+  // ==========================================
+  
+  // Main Copy Save
+  const onMainCopySubmit = (data: AboutFormInputs) => {
     const payload = {
       ...data,
-      timeline: aboutRes?.data?.timeline || [],
+      stats: statsInputs,
+      timeline: timelineInputs,
       process: aboutRes?.data?.process || [],
     };
     updateMutation.mutate(payload);
   };
 
+  // Team Form Handlers
+  const handleCreateTeamClick = () => {
+    setEditingTeamMember(null);
+    setTeamForm({
+      name: "",
+      role: "",
+      bio: "",
+      imageUrl: "",
+      sortOrder: teamMembers.length,
+      active: true,
+    });
+    setIsTeamFormOpen(true);
+  };
+  const handleEditTeamClick = (member: any) => {
+    setEditingTeamMember(member);
+    setTeamForm({
+      name: member.name || "",
+      role: member.role || "",
+      bio: member.bio || "",
+      imageUrl: member.imageUrl || "",
+      sortOrder: member.sortOrder !== undefined ? member.sortOrder : 0,
+      active: member.active !== undefined ? member.active : true,
+    });
+    setIsTeamFormOpen(true);
+  };
+  const onTeamSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!teamForm.name || !teamForm.role || !teamForm.imageUrl) {
+      alert("Name, role/designation, and profile image are required.");
+      return;
+    }
+    if (editingTeamMember) {
+      updateTeamMutation.mutate({ id: editingTeamMember.id, payload: teamForm });
+    } else {
+      createTeamMutation.mutate(teamForm);
+    }
+  };
+  const handleDeleteTeamConfirm = () => {
+    if (deletingTeamId) {
+      deleteTeamMutation.mutate(deletingTeamId);
+    }
+  };
+
+  // Awards Form Handlers
+  const handleCreateAwardClick = () => {
+    setEditingAward(null);
+    setAwardForm({
+      title: "",
+      category: "",
+      year: new Date().getFullYear().toString(),
+      organization: "",
+      imageUrl: "",
+      description: "",
+      sortOrder: awards.length,
+      active: true,
+    });
+    setIsAwardFormOpen(true);
+  };
+  const handleEditAwardClick = (award: any) => {
+    setEditingAward(award);
+    setAwardForm({
+      title: award.title || "",
+      category: award.category || "",
+      year: award.year || "",
+      organization: award.organization || "",
+      imageUrl: award.imageUrl || "",
+      description: award.description || "",
+      sortOrder: award.sortOrder !== undefined ? award.sortOrder : 0,
+      active: award.active !== undefined ? award.active : true,
+    });
+    setIsAwardFormOpen(true);
+  };
+  const onAwardSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!awardForm.title || !awardForm.category || !awardForm.year || !awardForm.organization) {
+      alert("Title, Category, Year, and Organization are required.");
+      return;
+    }
+    if (editingAward) {
+      updateAwardMutation.mutate({ id: editingAward.id, payload: awardForm });
+    } else {
+      createAwardMutation.mutate(awardForm);
+    }
+  };
+  const handleDeleteAwardConfirm = () => {
+    if (deletingAwardId) {
+      deleteAwardMutation.mutate(deletingAwardId);
+    }
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-8">
-        <div className="space-y-1">
-          <span className="text-[10px] uppercase tracking-widest text-luxury-accent font-semibold">ABOUT</span>
-          <h2 className="text-2xl md:text-3xl font-serif font-bold text-white">About Page Manager</h2>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="space-y-1">
+            <span className="text-[10px] uppercase tracking-widest text-luxury-accent font-semibold">ABOUT</span>
+            <h2 className="text-2xl md:text-3xl font-serif font-bold text-white">About Page Manager</h2>
+          </div>
+          {activeTab === "team" && (
+            <button
+              onClick={handleCreateTeamClick}
+              className="px-5 py-2.5 bg-luxury-accent hover:bg-luxury-hover text-luxury-bg text-[10px] font-sans uppercase tracking-widest font-bold rounded-sm flex items-center gap-2 transition-all cursor-pointer shadow-lg animate-pulse hover:animate-none"
+            >
+              <Plus size={14} />
+              Add Guild Member
+            </button>
+          )}
+          {activeTab === "awards" && (
+            <button
+              onClick={handleCreateAwardClick}
+              className="px-5 py-2.5 bg-luxury-accent hover:bg-luxury-hover text-luxury-bg text-[10px] font-sans uppercase tracking-widest font-bold rounded-sm flex items-center gap-2 transition-all cursor-pointer shadow-lg animate-pulse hover:animate-none"
+            >
+              <Plus size={14} />
+              Add Award Entry
+            </button>
+          )}
         </div>
 
-        {isLoading ? (
-          <div className="h-60 flex items-center justify-center">
-            <Loader2 className="animate-spin text-luxury-accent" size={24} />
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 max-w-3xl">
-            {/* Success feedback Alert */}
-            {updateMutation.isSuccess && (
-              <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-sm flex items-start gap-3 text-green-400 text-xs font-sans leading-relaxed">
-                <CheckCircle size={16} className="shrink-0 mt-0.5" />
-                <div>
-                  <span className="font-semibold block mb-0.5">About Page Copy Updated</span>
-                  About page details saved. Revisions are live on the public website.
-                </div>
+        {/* Dynamic Tab Switcher */}
+        <div className="flex border-b border-white/5 space-x-8">
+          <button
+            onClick={() => setActiveTab("content")}
+            className={`pb-4 text-xs font-sans uppercase tracking-widest font-semibold border-b-2 transition-all cursor-pointer ${
+              activeTab === "content" ? "border-luxury-accent text-luxury-accent" : "border-transparent text-luxury-muted hover:text-white"
+            }`}
+          >
+            About Content & Copy
+          </button>
+          <button
+            onClick={() => setActiveTab("team")}
+            className={`pb-4 text-xs font-sans uppercase tracking-widest font-semibold border-b-2 transition-all cursor-pointer ${
+              activeTab === "team" ? "border-luxury-accent text-luxury-accent" : "border-transparent text-luxury-muted hover:text-white"
+            }`}
+          >
+            Team Management
+          </button>
+          <button
+            onClick={() => setActiveTab("awards")}
+            className={`pb-4 text-xs font-sans uppercase tracking-widest font-semibold border-b-2 transition-all cursor-pointer ${
+              activeTab === "awards" ? "border-luxury-accent text-luxury-accent" : "border-transparent text-luxury-muted hover:text-white"
+            }`}
+          >
+            Awards & Accolades
+          </button>
+        </div>
+
+        {/* ==========================================
+            TAB 1: ABOUT CONTENT & COPY
+            ========================================== */}
+        {activeTab === "content" && (
+          <>
+            {isAboutLoading ? (
+              <div className="h-60 flex items-center justify-center">
+                <Loader2 className="animate-spin text-luxury-accent" size={24} />
               </div>
-            )}
+            ) : (
+              <form onSubmit={handleSubmit(onMainCopySubmit)} className="space-y-8 max-w-3xl">
+                {updateMutation.isSuccess && (
+                  <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-sm flex items-start gap-3 text-green-400 text-xs font-sans leading-relaxed">
+                    <CheckCircle size={16} className="shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-semibold block mb-0.5">About Page Copy Updated</span>
+                      About page details saved. Revisions are live on the public website.
+                    </div>
+                  </div>
+                )}
 
-            {/* Hero Copy Card */}
-            <div className="bg-[#151515] border border-white/5 p-6 rounded-sm space-y-6 shadow-lg">
-              <h3 className="font-serif text-lg font-bold text-white border-b border-white/5 pb-3">Hero Banner</h3>
-              
-              <ImageUploader
-                label="Hero Background Image"
-                value={heroImage}
-                onChange={(url) => setValue("hero.image", url, { shouldDirty: true })}
-              />
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {/* Hero Title */}
-                <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Headline</label>
-                  <input
-                    type="text"
-                    {...register("hero.title")}
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none"
+                {/* Hero Copy Card */}
+                <div className="bg-[#151515] border border-white/5 p-6 rounded-sm space-y-6 shadow-lg">
+                  <h3 className="font-serif text-lg font-bold text-white border-b border-white/5 pb-3">Hero Banner</h3>
+                  <ImageUploader
+                    label="Hero Background Image"
+                    value={heroImage}
+                    onChange={(url) => setValue("hero.image", url, { shouldDirty: true })}
                   />
-                </div>
-
-                {/* Hero Subtitle */}
-                <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Subtitle</label>
-                  <input
-                    type="text"
-                    {...register("hero.subtitle")}
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Hero Slogan */}
-              <div className="flex flex-col space-y-1.5">
-                <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Description</label>
-                <textarea
-                  rows={3}
-                  {...register("hero.description")}
-                  className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none resize-none"
-                />
-              </div>
-            </div>
-
-            {/* Founder Story Copy Card */}
-            <div className="bg-[#151515] border border-white/5 p-6 rounded-sm space-y-6 shadow-lg">
-              <h3 className="font-serif text-lg font-bold text-white border-b border-white/5 pb-3">Founder Profile & Biography</h3>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <ImageUploader
-                  label="Founder Portrait (Jay Prakash)"
-                  value={founderImageSujay}
-                  onChange={(url) => setValue("founders.images.sujay", url, { shouldDirty: true })}
-                />
-                <ImageUploader
-                  label="Behind the Lens Portrait"
-                  value={founderImageShreyanka}
-                  onChange={(url) => setValue("founders.images.shreyanka", url, { shouldDirty: true })}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                {/* Founder Name */}
-                <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Founder Name</label>
-                  <input
-                    type="text"
-                    {...register("founders.title")}
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none"
-                  />
-                </div>
-
-                {/* Founder Subtitle */}
-                <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Biographical Role / Title</label>
-                  <input
-                    type="text"
-                    {...register("founders.subtitle")}
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Biography Story Paragraphs */}
-              <div className="space-y-3 pt-3 border-t border-white/5">
-                <div className="flex justify-between items-center">
-                  <label className="text-[10px] uppercase tracking-wider text-white font-sans font-bold">Biographical Story Paragraphs</label>
-                  <button
-                    type="button"
-                    onClick={addStoryRow}
-                    className="px-2.5 py-1.5 bg-luxury-accent/10 border border-luxury-accent/25 hover:bg-luxury-accent/20 text-luxury-accent text-[9px] uppercase tracking-wider rounded-sm cursor-pointer"
-                  >
-                    + Add Paragraph
-                  </button>
-                </div>
-
-                <div className="space-y-3">
-                  {storyInputs.map((para, idx) => (
-                    <div key={idx} className="flex gap-2 items-start">
-                      <textarea
-                        rows={3}
-                        value={para}
-                        onChange={(e) => handleStoryChange(idx, e.target.value)}
-                        className="flex-1 bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2 rounded-sm text-xs font-sans outline-none resize-none"
-                        placeholder="Founder story paragraphs..."
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="flex flex-col space-y-1.5">
+                      <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Headline</label>
+                      <input
+                        type="text"
+                        {...register("hero.title")}
+                        className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none"
                       />
+                    </div>
+                    <div className="flex flex-col space-y-1.5">
+                      <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Subtitle</label>
+                      <input
+                        type="text"
+                        {...register("hero.subtitle")}
+                        className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Description</label>
+                    <textarea
+                      rows={3}
+                      {...register("hero.description")}
+                      className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none resize-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Founder Story Copy Card */}
+                <div className="bg-[#151515] border border-white/5 p-6 rounded-sm space-y-6 shadow-lg">
+                  <h3 className="font-serif text-lg font-bold text-white border-b border-white/5 pb-3">Founder Profile & Biography</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <ImageUploader
+                      label="Founder Portrait (Jay Prakash)"
+                      value={founderImageSujay}
+                      onChange={(url) => setValue("founders.images.sujay", url, { shouldDirty: true })}
+                    />
+                    <ImageUploader
+                      label="Behind the Lens Portrait"
+                      value={founderImageShreyanka}
+                      onChange={(url) => setValue("founders.images.shreyanka", url, { shouldDirty: true })}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="flex flex-col space-y-1.5">
+                      <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Founder Name</label>
+                      <input
+                        type="text"
+                        {...register("founders.title")}
+                        className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none"
+                      />
+                    </div>
+                    <div className="flex flex-col space-y-1.5">
+                      <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Biographical Role / Title</label>
+                      <input
+                        type="text"
+                        {...register("founders.subtitle")}
+                        className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-3 pt-3 border-t border-white/5">
+                    <div className="flex justify-between items-center">
+                      <label className="text-[10px] uppercase tracking-wider text-white font-sans font-bold">Biographical Story Paragraphs</label>
                       <button
                         type="button"
-                        onClick={() => removeStoryRow(idx)}
-                        className="p-2.5 bg-neutral-900 border border-white/5 hover:border-red-500/30 text-luxury-muted hover:text-red-400 rounded-sm cursor-pointer"
+                        onClick={addStoryRow}
+                        className="px-2.5 py-1.5 bg-luxury-accent/10 border border-luxury-accent/25 hover:bg-luxury-accent/20 text-luxury-accent text-[9px] uppercase tracking-wider rounded-sm cursor-pointer"
                       >
-                        <X size={14} />
+                        + Add Paragraph
                       </button>
                     </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Mission & Vision Copy Card */}
-            <div className="bg-[#151515] border border-white/5 p-6 rounded-sm space-y-6 shadow-lg">
-              <h3 className="font-serif text-lg font-bold text-white border-b border-white/5 pb-3">Mission & Vision</h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Mission */}
-                <div className="space-y-4">
-                  <div className="flex flex-col space-y-1.5">
-                    <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Mission Title</label>
-                    <input
-                      type="text"
-                      {...register("missionVision.mission.title")}
-                      className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none"
-                    />
-                  </div>
-                  <div className="flex flex-col space-y-1.5">
-                    <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Mission Copy</label>
-                    <textarea
-                      rows={3}
-                      {...register("missionVision.mission.description")}
-                      className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none resize-none"
-                    />
+                    <div className="space-y-3">
+                      {storyInputs.map((para, idx) => (
+                        <div key={idx} className="flex gap-2 items-start">
+                          <textarea
+                            rows={3}
+                            value={para}
+                            onChange={(e) => handleStoryChange(idx, e.target.value)}
+                            className="flex-1 bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2 rounded-sm text-xs font-sans outline-none resize-none"
+                            placeholder="Founder story paragraphs..."
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeStoryRow(idx)}
+                            className="p-2.5 bg-neutral-900 border border-white/5 hover:border-red-500/30 text-luxury-muted hover:text-red-400 rounded-sm cursor-pointer"
+                          >
+                            <X size={14} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
-                {/* Vision */}
-                <div className="space-y-4">
-                  <div className="flex flex-col space-y-1.5">
-                    <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Vision Title</label>
-                    <input
-                      type="text"
-                      {...register("missionVision.vision.title")}
-                      className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none"
-                    />
-                  </div>
-                  <div className="flex flex-col space-y-1.5">
-                    <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Vision Copy</label>
-                    <textarea
-                      rows={3}
-                      {...register("missionVision.vision.description")}
-                      className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none resize-none"
-                    />
+                {/* Mission & Vision Copy Card */}
+                <div className="bg-[#151515] border border-white/5 p-6 rounded-sm space-y-6 shadow-lg">
+                  <h3 className="font-serif text-lg font-bold text-white border-b border-white/5 pb-3">Mission & Vision</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <div className="flex flex-col space-y-1.5">
+                        <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Mission Title</label>
+                        <input
+                          type="text"
+                          {...register("missionVision.mission.title")}
+                          className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none"
+                        />
+                      </div>
+                      <div className="flex flex-col space-y-1.5">
+                        <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Mission Copy</label>
+                        <textarea
+                          rows={3}
+                          {...register("missionVision.mission.description")}
+                          className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none resize-none"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="flex flex-col space-y-1.5">
+                        <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Vision Title</label>
+                        <input
+                          type="text"
+                          {...register("missionVision.vision.title")}
+                          className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none"
+                        />
+                      </div>
+                      <div className="flex flex-col space-y-1.5">
+                        <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Vision Copy</label>
+                        <textarea
+                          rows={3}
+                          {...register("missionVision.vision.description")}
+                          className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none resize-none"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
 
-            {/* Action Bar */}
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                disabled={updateMutation.isPending || !isDirty}
-                className="px-8 py-3.5 bg-luxury-accent hover:bg-luxury-hover disabled:bg-neutral-800 disabled:text-neutral-500 text-luxury-bg text-xs font-sans uppercase tracking-widest font-bold rounded-sm transition-all duration-300 flex items-center gap-2 cursor-pointer shadow-lg"
-              >
-                {updateMutation.isPending ? (
-                  <>
-                    <Loader2 className="animate-spin" size={14} />
-                    Updating copy...
-                  </>
-                ) : (
-                  <>
-                    <Save size={14} />
-                    Save About Copy
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
+                {/* Journey Timeline Card */}
+                <div className="bg-[#151515] border border-white/5 p-6 rounded-sm space-y-6 shadow-lg">
+                  <div className="flex justify-between items-center border-b border-white/5 pb-3">
+                    <h3 className="font-serif text-lg font-bold text-white">Journey Timeline</h3>
+                    <button
+                      type="button"
+                      onClick={addTimelineRow}
+                      className="px-2.5 py-1.5 bg-luxury-accent/10 border border-luxury-accent/25 hover:bg-luxury-accent/20 text-luxury-accent text-[9px] uppercase tracking-wider rounded-sm cursor-pointer"
+                    >
+                      + Add Milestone
+                    </button>
+                  </div>
+                  <div className="space-y-6">
+                    {timelineInputs.length === 0 ? (
+                      <span className="text-[10px] uppercase tracking-widest text-luxury-muted text-center block py-4">No milestone events added yet.</span>
+                    ) : (
+                      timelineInputs.map((item, idx) => (
+                        <div key={idx} className="p-4 bg-luxury-bg border border-white/5 rounded-sm space-y-4 relative">
+                          <button
+                            type="button"
+                            onClick={() => removeTimelineRow(idx)}
+                            className="absolute top-4 right-4 p-1 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 rounded-sm cursor-pointer"
+                            title="Remove Milestone"
+                          >
+                            <X size={12} />
+                          </button>
+                          <div className="grid grid-cols-3 gap-4">
+                            <div className="flex flex-col space-y-1.5">
+                              <label className="text-[9px] uppercase tracking-wider text-luxury-muted font-sans">Year</label>
+                              <input
+                                type="text"
+                                value={item.year}
+                                onChange={(e) => handleTimelineChange(idx, "year", e.target.value)}
+                                className="bg-neutral-900 border border-white/5 focus:border-luxury-accent text-white px-3 py-1.5 rounded-sm text-xs font-sans outline-none"
+                                placeholder="e.g. 2011"
+                              />
+                            </div>
+                            <div className="flex flex-col col-span-2 space-y-1.5">
+                              <label className="text-[9px] uppercase tracking-wider text-luxury-muted font-sans">Milestone Title</label>
+                              <input
+                                type="text"
+                                value={item.title}
+                                onChange={(e) => handleTimelineChange(idx, "title", e.target.value)}
+                                className="bg-neutral-900 border border-white/5 focus:border-luxury-accent text-white px-3 py-1.5 rounded-sm text-xs font-sans outline-none"
+                                placeholder="e.g. The Genesis"
+                              />
+                            </div>
+                          </div>
+                          <div className="flex flex-col space-y-1.5">
+                            <label className="text-[9px] uppercase tracking-wider text-luxury-muted font-sans">Description</label>
+                            <textarea
+                              rows={2}
+                              value={item.description}
+                              onChange={(e) => handleTimelineChange(idx, "description", e.target.value)}
+                              className="bg-neutral-900 border border-white/5 focus:border-luxury-accent text-white px-3 py-1.5 rounded-sm text-xs font-sans outline-none resize-none"
+                              placeholder="Detail of the historical event..."
+                            />
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                {/* Stats Counters Card */}
+                <div className="bg-[#151515] border border-white/5 p-6 rounded-sm space-y-6 shadow-lg">
+                  <div className="flex justify-between items-center border-b border-white/5 pb-3">
+                    <h3 className="font-serif text-lg font-bold text-white">Impact stats</h3>
+                    <button
+                      type="button"
+                      onClick={addStatRow}
+                      className="px-2.5 py-1.5 bg-luxury-accent/10 border border-luxury-accent/25 hover:bg-luxury-accent/20 text-luxury-accent text-[9px] uppercase tracking-wider rounded-sm cursor-pointer"
+                    >
+                      + Add Stat
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {statsInputs.map((item, idx) => (
+                      <div key={idx} className="p-4 bg-luxury-bg border border-white/5 rounded-sm space-y-3 relative">
+                        <button
+                          type="button"
+                          onClick={() => removeStatRow(idx)}
+                          className="absolute top-2 right-2 p-1 text-luxury-muted hover:text-red-400 cursor-pointer"
+                          title="Remove Stat"
+                        >
+                          <X size={12} />
+                        </button>
+                        <div className="flex flex-col space-y-1">
+                          <label className="text-[9px] uppercase tracking-wider text-luxury-muted font-sans">Metric Value</label>
+                          <input
+                            type="text"
+                            value={item.value}
+                            onChange={(e) => handleStatChange(idx, "value", e.target.value)}
+                            className="bg-neutral-900 border border-white/5 focus:border-luxury-accent text-white px-3 py-1.5 rounded-sm text-xs font-sans outline-none"
+                            placeholder="e.g. 15+"
+                          />
+                        </div>
+                        <div className="flex flex-col space-y-1">
+                          <label className="text-[9px] uppercase tracking-wider text-luxury-muted font-sans">Label</label>
+                          <input
+                            type="text"
+                            value={item.label}
+                            onChange={(e) => handleStatChange(idx, "label", e.target.value)}
+                            className="bg-neutral-900 border border-white/5 focus:border-luxury-accent text-white px-3 py-1.5 rounded-sm text-xs font-sans outline-none"
+                            placeholder="e.g. Years of Experience"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Action Bar */}
+                <div className="flex justify-end">
+                  <button
+                    type="submit"
+                    disabled={updateMutation.isPending || !isDirty}
+                    className="px-8 py-3.5 bg-luxury-accent hover:bg-luxury-hover disabled:bg-neutral-800 disabled:text-neutral-500 text-luxury-bg text-xs font-sans uppercase tracking-widest font-bold rounded-sm transition-all duration-300 flex items-center gap-2 cursor-pointer shadow-lg"
+                  >
+                    {updateMutation.isPending ? (
+                      <>
+                        <Loader2 className="animate-spin" size={14} />
+                        Updating copy...
+                      </>
+                    ) : (
+                      <>
+                        <Save size={14} />
+                        Save About Copy
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
+          </>
         )}
+
+        {/* ==========================================
+            TAB 2: TEAM MANAGEMENT
+            ========================================== */}
+        {activeTab === "team" && (
+          <>
+            {isTeamLoading ? (
+              <div className="h-60 flex items-center justify-center">
+                <Loader2 className="animate-spin text-luxury-accent" size={24} />
+              </div>
+            ) : teamMembers.length === 0 ? (
+              <div className="bg-[#151515] border border-white/5 rounded-sm p-16 text-center shadow-lg">
+                <Users className="mx-auto text-luxury-muted mb-4" size={32} />
+                <span className="text-xs text-luxury-muted uppercase tracking-widest block mb-2">No team members created yet.</span>
+                <p className="text-[10px] text-neutral-500 font-sans">Click "Add Guild Member" above to set up your primary artists.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                {teamMembers.map((m: any) => (
+                  <div key={m.id} className="bg-[#151515] border border-white/5 p-6 rounded-sm flex flex-col justify-between space-y-4 shadow-lg group relative">
+                    {!m.active && (
+                      <span className="absolute top-4 right-4 px-2 py-0.5 bg-neutral-900 border border-white/10 text-[9px] uppercase tracking-wider font-semibold text-neutral-500 rounded-sm">
+                        Inactive
+                      </span>
+                    )}
+                    <div className="space-y-4">
+                      <div
+                        className="aspect-square bg-cover bg-center border border-white/5 rounded-sm shadow-md"
+                        style={{ backgroundImage: `url('${m.imageUrl}')` }}
+                      />
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-serif text-base font-bold text-white">{m.name}</h4>
+                          <span className="font-mono text-[9px] text-luxury-accent/50">#{m.sortOrder}</span>
+                        </div>
+                        <span className="text-[9px] uppercase tracking-widest text-luxury-accent font-semibold block">{m.role}</span>
+                        <p className="text-[10px] text-neutral-400 font-sans leading-normal font-light line-clamp-3 pt-2">
+                          {m.bio}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 pt-2 border-t border-white/5">
+                      <button
+                        onClick={() => handleEditTeamClick(m)}
+                        className="flex-1 py-2 bg-white/5 hover:bg-luxury-accent/10 border border-white/5 hover:border-luxury-accent/20 text-white text-[9px] font-sans uppercase tracking-widest font-bold rounded-sm flex items-center justify-center gap-1 cursor-pointer transition-colors"
+                      >
+                        <Edit2 size={10} />
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => {
+                          setDeletingTeamId(m.id);
+                          setIsTeamDeleteOpen(true);
+                        }}
+                        className="py-2 px-3 bg-red-500/10 hover:bg-red-500/20 border border-red-500/10 hover:border-red-500/35 text-red-400 rounded-sm flex items-center justify-center cursor-pointer transition-colors"
+                        title="Delete team member"
+                      >
+                        <Trash2 size={10} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {/* ==========================================
+            TAB 3: AWARDS & ACCOLADES
+            ========================================== */}
+        {activeTab === "awards" && (
+          <>
+            {isAwardsLoading ? (
+              <div className="h-60 flex items-center justify-center">
+                <Loader2 className="animate-spin text-luxury-accent" size={24} />
+              </div>
+            ) : awards.length === 0 ? (
+              <div className="bg-[#151515] border border-white/5 rounded-sm p-16 text-center shadow-lg">
+                <Award className="mx-auto text-luxury-muted mb-4" size={32} />
+                <span className="text-xs text-luxury-muted uppercase tracking-widest block mb-2">No award entries configured yet.</span>
+                <p className="text-[10px] text-neutral-500 font-sans">Click "Add Award Entry" above to populate credentials.</p>
+              </div>
+            ) : (
+              <div className="bg-[#151515] border border-white/5 rounded-sm shadow-lg overflow-x-auto">
+                <table className="w-full border-collapse text-left text-xs font-sans">
+                  <thead>
+                    <tr className="border-b border-white/5 bg-luxury-sec/60 text-[10px] uppercase tracking-wider text-luxury-accent">
+                      <th className="p-4 font-bold">Sort</th>
+                      <th className="p-4 font-bold">Year</th>
+                      <th className="p-4 font-bold">Title</th>
+                      <th className="p-4 font-bold">Category</th>
+                      <th className="p-4 font-bold">Organization</th>
+                      <th className="p-4 font-bold">Status</th>
+                      <th className="p-4 font-bold text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5">
+                    {awards.map((a: any) => (
+                      <tr key={a.id} className="hover:bg-white/[0.02] transition-colors text-neutral-300">
+                        <td className="p-4 font-mono text-[10px] text-neutral-500">#{a.sortOrder}</td>
+                        <td className="p-4 font-serif text-white font-bold">{a.year}</td>
+                        <td className="p-4 font-bold text-white">{a.title}</td>
+                        <td className="p-4">{a.category}</td>
+                        <td className="p-4">{a.organization}</td>
+                        <td className="p-4">
+                          <span className={`px-2 py-0.5 rounded-sm text-[8px] font-mono font-bold uppercase tracking-wider border ${
+                            a.active 
+                              ? "bg-green-500/10 border-green-500/25 text-green-400"
+                              : "bg-neutral-800 border-white/10 text-neutral-500"
+                          }`}>
+                            {a.active ? "Active" : "Inactive"}
+                          </span>
+                        </td>
+                        <td className="p-4 text-right">
+                          <div className="inline-flex gap-2">
+                            <button
+                              onClick={() => handleEditAwardClick(a)}
+                              className="p-1.5 bg-white/5 hover:bg-luxury-accent/15 border border-white/5 hover:border-luxury-accent/25 text-white hover:text-luxury-accent rounded-sm cursor-pointer"
+                              title="Edit award"
+                            >
+                              <Edit2 size={10} />
+                            </button>
+                            <button
+                              onClick={() => {
+                                setDeletingAwardId(a.id);
+                                setIsAwardDeleteOpen(true);
+                              }}
+                              className="p-1.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/10 hover:border-red-500/35 text-red-400 rounded-sm cursor-pointer"
+                              title="Delete award"
+                            >
+                              <Trash2 size={10} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* ==========================================
+            TEAM MEMBER MODAL
+            ========================================== */}
+        {isTeamFormOpen && (
+          <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-6">
+            <div className="bg-[#151515] border border-white/10 max-w-md w-full p-8 rounded-sm shadow-2xl relative max-h-[85vh] overflow-y-auto">
+              <button
+                onClick={() => setIsTeamFormOpen(false)}
+                className="absolute top-5 right-5 text-white/50 hover:text-white transition-colors cursor-pointer"
+              >
+                <X size={20} />
+              </button>
+
+              <h3 className="font-serif text-xl font-bold text-white mb-6">
+                {editingTeamMember ? "Edit Guild Member" : "Add Guild Member"}
+              </h3>
+
+              <form onSubmit={onTeamSubmit} className="space-y-5">
+                <ImageUploader
+                  label="Profile Image"
+                  value={teamForm.imageUrl}
+                  onChange={(url) => setTeamForm({ ...teamForm, imageUrl: url })}
+                />
+
+                <div className="flex flex-col space-y-1.5">
+                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Name</label>
+                  <input
+                    type="text"
+                    value={teamForm.name}
+                    onChange={(e) => setTeamForm({ ...teamForm, name: e.target.value })}
+                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none"
+                    placeholder="e.g. Jay Prakash"
+                  />
+                </div>
+
+                <div className="flex flex-col space-y-1.5">
+                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Designation / Role</label>
+                  <input
+                    type="text"
+                    value={teamForm.role}
+                    onChange={(e) => setTeamForm({ ...teamForm, role: e.target.value })}
+                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none"
+                    placeholder="e.g. Lead Storyteller / Editor"
+                  />
+                </div>
+
+                <div className="flex flex-col space-y-1.5">
+                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Biography / Description</label>
+                  <textarea
+                    rows={4}
+                    value={teamForm.bio}
+                    onChange={(e) => setTeamForm({ ...teamForm, bio: e.target.value })}
+                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none resize-none"
+                    placeholder="Brief description about composition expertise..."
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Sort Order</label>
+                    <input
+                      type="number"
+                      value={teamForm.sortOrder}
+                      onChange={(e) => setTeamForm({ ...teamForm, sortOrder: Number(e.target.value) })}
+                      className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none"
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Status</label>
+                    <div className="flex items-center gap-2 pt-2">
+                      <input
+                        type="checkbox"
+                        id="team-active"
+                        checked={teamForm.active}
+                        onChange={(e) => setTeamForm({ ...teamForm, active: e.target.checked })}
+                        className="accent-luxury-accent h-4 w-4 bg-neutral-900 border-white/5 rounded-sm cursor-pointer"
+                      />
+                      <label htmlFor="team-active" className="text-xs text-neutral-300 font-sans select-none cursor-pointer">
+                        Active Guild Member
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsTeamFormOpen(false)}
+                    className="flex-1 py-3 border border-white/10 hover:bg-white/5 text-white text-[10px] font-sans uppercase tracking-widest font-bold rounded-sm transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={createTeamMutation.isPending || updateTeamMutation.isPending}
+                    className="flex-1 py-3 bg-luxury-accent hover:bg-luxury-hover text-luxury-bg text-[10px] font-sans uppercase tracking-widest font-bold rounded-sm transition-all cursor-pointer flex items-center justify-center gap-2"
+                  >
+                    {(createTeamMutation.isPending || updateTeamMutation.isPending) && (
+                      <Loader2 className="animate-spin" size={12} />
+                    )}
+                    {editingTeamMember ? "Save Changes" : "Add Member"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* ==========================================
+            AWARD MODAL
+            ========================================== */}
+        {isAwardFormOpen && (
+          <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-6">
+            <div className="bg-[#151515] border border-white/10 max-w-md w-full p-8 rounded-sm shadow-2xl relative max-h-[85vh] overflow-y-auto">
+              <button
+                onClick={() => setIsAwardFormOpen(false)}
+                className="absolute top-5 right-5 text-white/50 hover:text-white transition-colors cursor-pointer"
+              >
+                <X size={20} />
+              </button>
+
+              <h3 className="font-serif text-xl font-bold text-white mb-6">
+                {editingAward ? "Edit Award Entry" : "Add Award Entry"}
+              </h3>
+
+              <form onSubmit={onAwardSubmit} className="space-y-5">
+                <ImageUploader
+                  label="Award Trophy / Icon Image (Optional)"
+                  value={awardForm.imageUrl}
+                  onChange={(url) => setAwardForm({ ...awardForm, imageUrl: url })}
+                />
+
+                <div className="flex flex-col space-y-1.5">
+                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Award Title</label>
+                  <input
+                    type="text"
+                    value={awardForm.title}
+                    onChange={(e) => setAwardForm({ ...awardForm, title: e.target.value })}
+                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none"
+                    placeholder="e.g. Top 10 Wedding Photographers"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Year</label>
+                    <input
+                      type="text"
+                      value={awardForm.year}
+                      onChange={(e) => setAwardForm({ ...awardForm, year: e.target.value })}
+                      className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none"
+                      placeholder="e.g. 2026"
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Category</label>
+                    <input
+                      type="text"
+                      value={awardForm.category}
+                      onChange={(e) => setAwardForm({ ...awardForm, category: e.target.value })}
+                      className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none"
+                      placeholder="e.g. Fine-art Editorial"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col space-y-1.5">
+                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Organization</label>
+                  <input
+                    type="text"
+                    value={awardForm.organization}
+                    onChange={(e) => setAwardForm({ ...awardForm, organization: e.target.value })}
+                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none"
+                    placeholder="e.g. Better Photography"
+                  />
+                </div>
+
+                <div className="flex flex-col space-y-1.5">
+                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Description (Optional)</label>
+                  <textarea
+                    rows={3}
+                    value={awardForm.description}
+                    onChange={(e) => setAwardForm({ ...awardForm, description: e.target.value })}
+                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none resize-none"
+                    placeholder="Details about the accolade or certificate..."
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Sort Order</label>
+                    <input
+                      type="number"
+                      value={awardForm.sortOrder}
+                      onChange={(e) => setAwardForm({ ...awardForm, sortOrder: Number(e.target.value) })}
+                      className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none"
+                    />
+                  </div>
+                  <div className="flex flex-col space-y-1.5">
+                    <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Status</label>
+                    <div className="flex items-center gap-2 pt-2">
+                      <input
+                        type="checkbox"
+                        id="award-active"
+                        checked={awardForm.active}
+                        onChange={(e) => setAwardForm({ ...awardForm, active: e.target.checked })}
+                        className="accent-luxury-accent h-4 w-4 bg-neutral-900 border-white/5 rounded-sm cursor-pointer"
+                      />
+                      <label htmlFor="award-active" className="text-xs text-neutral-300 font-sans select-none cursor-pointer">
+                        Active Accolade
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsAwardFormOpen(false)}
+                    className="flex-1 py-3 border border-white/10 hover:bg-white/5 text-white text-[10px] font-sans uppercase tracking-widest font-bold rounded-sm transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={createAwardMutation.isPending || updateAwardMutation.isPending}
+                    className="flex-1 py-3 bg-luxury-accent hover:bg-luxury-hover text-luxury-bg text-[10px] font-sans uppercase tracking-widest font-bold rounded-sm transition-all cursor-pointer flex items-center justify-center gap-2"
+                  >
+                    {(createAwardMutation.isPending || updateAwardMutation.isPending) && (
+                      <Loader2 className="animate-spin" size={12} />
+                    )}
+                    {editingAward ? "Save Changes" : "Add Entry"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Team confirmation */}
+        <ConfirmModal
+          isOpen={isTeamDeleteOpen}
+          title="Delete Team Member"
+          message="Are you sure you want to delete this guild member? This will remove their record and photo from the about section."
+          confirmLabel="Delete"
+          isDanger={true}
+          isLoading={deleteTeamMutation.isPending}
+          onConfirm={handleDeleteTeamConfirm}
+          onCancel={() => {
+            setIsTeamDeleteOpen(false);
+            setDeletingTeamId(null);
+          }}
+        />
+
+        {/* Delete Award confirmation */}
+        <ConfirmModal
+          isOpen={isAwardDeleteOpen}
+          title="Delete Award Entry"
+          message="Are you sure you want to delete this accolade entry? This will remove it from the accolades log table."
+          confirmLabel="Delete"
+          isDanger={true}
+          isLoading={deleteAwardMutation.isPending}
+          onConfirm={handleDeleteAwardConfirm}
+          onCancel={() => {
+            setIsAwardDeleteOpen(false);
+            setDeletingAwardId(null);
+          }}
+        />
       </div>
     </AdminLayout>
   );

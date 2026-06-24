@@ -3,7 +3,7 @@
 import React from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { StatsCard } from "@/components/admin/StatsCard";
-import { useAdminDashboard } from "@/hooks/admin/useAdmin";
+import { useDashboard } from "@/hooks/admin/useDashboard";
 import {
   Calendar,
   Inbox,
@@ -11,10 +11,12 @@ import {
   Image as ImageIcon,
   Quote,
   Activity,
+  Users,
+  Award,
 } from "lucide-react";
 
 export default function AdminDashboardPage() {
-  const { data: statsRes, isLoading } = useAdminDashboard();
+  const { data: dashboardData, isLoading } = useDashboard();
 
   if (isLoading) {
     return (
@@ -31,7 +33,7 @@ export default function AdminDashboardPage() {
     );
   }
 
-  const data = statsRes?.data || {
+  const data = dashboardData || {
     metrics: {
       totalBookings: 0,
       totalInquiries: 0,
@@ -39,6 +41,8 @@ export default function AdminDashboardPage() {
       totalRegistrations: 0,
       totalGalleryImages: 0,
       totalTestimonials: 0,
+      totalTeamMembers: 0,
+      totalAwards: 0,
     },
     recentBookings: [],
     recentInquiries: [],
@@ -53,6 +57,8 @@ export default function AdminDashboardPage() {
     { title: "Workshop Bookings", value: data.metrics.totalRegistrations, icon: GraduationCap, desc: "Seats reserved" },
     { title: "Gallery Images", value: data.metrics.totalGalleryImages, icon: ImageIcon, desc: "Portfolio items" },
     { title: "Testimonials", value: data.metrics.totalTestimonials, icon: Quote, desc: "Client stories" },
+    { title: "Team Members", value: data.metrics.totalTeamMembers || 0, icon: Users, desc: "Guild members" },
+    { title: "Awards & Accolades", value: data.metrics.totalAwards || 0, icon: Award, desc: "Industry awards" },
   ];
 
   return (
@@ -65,7 +71,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Metrics Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {metricsList.map((m, idx) => (
             <StatsCard
               key={idx}

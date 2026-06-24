@@ -98,6 +98,7 @@ export default function AdminWorkshopsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminWorkshops"] });
+      queryClient.invalidateQueries({ queryKey: ["adminDashboard"] });
       setIsFormOpen(false);
     },
   });
@@ -109,6 +110,7 @@ export default function AdminWorkshopsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminWorkshops"] });
+      queryClient.invalidateQueries({ queryKey: ["adminDashboard"] });
       setIsFormOpen(false);
     },
   });
@@ -120,6 +122,7 @@ export default function AdminWorkshopsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminWorkshops"] });
+      queryClient.invalidateQueries({ queryKey: ["adminDashboard"] });
       setIsDeleteOpen(false);
       setDeletingId(null);
     },

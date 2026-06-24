@@ -125,6 +125,8 @@ model Team {
   role      String
   bio       String    @db.Text
   imageUrl  String    @db.VarChar(512)
+  sortOrder Int       @default(0)
+  active    Boolean   @default(true)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
@@ -138,6 +140,10 @@ model Award {
   category     String
   year         String
   organization String
+  imageUrl     String?   @db.VarChar(512)
+  description  String?   @db.Text
+  sortOrder    Int       @default(0)
+  active       Boolean   @default(true)
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   deletedAt    DateTime?

@@ -7,6 +7,7 @@ export function useCreateGalleryItem() {
     mutationFn: galleryService.createGalleryItem,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["gallery"] });
+      queryClient.invalidateQueries({ queryKey: ["adminDashboard"] });
     },
   });
 }
@@ -19,6 +20,7 @@ export function useUpdateGalleryItem() {
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["gallery"] });
       queryClient.invalidateQueries({ queryKey: ["galleryItem", variables.id] });
+      queryClient.invalidateQueries({ queryKey: ["adminDashboard"] });
     },
   });
 }
@@ -29,6 +31,7 @@ export function useDeleteGalleryItem() {
     mutationFn: galleryService.deleteGalleryItem,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["gallery"] });
+      queryClient.invalidateQueries({ queryKey: ["adminDashboard"] });
     },
   });
 }

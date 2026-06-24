@@ -30,6 +30,7 @@ export const PUT = withErrorHandler(async (req: Request) => {
     missionVision: body.missionVision,
     timeline: body.timeline || [],
     process: body.process || [],
+    stats: body.stats,
   });
 
   return NextResponse.json({

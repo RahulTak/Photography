@@ -64,6 +64,7 @@ export default function AdminTestimonialsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminTestimonials"] });
       queryClient.invalidateQueries({ queryKey: ["testimonials"] });
+      queryClient.invalidateQueries({ queryKey: ["adminDashboard"] });
       setIsFormOpen(false);
       refetch();
     },
@@ -77,6 +78,7 @@ export default function AdminTestimonialsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminTestimonials"] });
       queryClient.invalidateQueries({ queryKey: ["testimonials"] });
+      queryClient.invalidateQueries({ queryKey: ["adminDashboard"] });
       setIsFormOpen(false);
       refetch();
     },
@@ -90,6 +92,7 @@ export default function AdminTestimonialsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["adminTestimonials"] });
       queryClient.invalidateQueries({ queryKey: ["testimonials"] });
+      queryClient.invalidateQueries({ queryKey: ["adminDashboard"] });
       setIsDeleteOpen(false);
       setDeletingId(null);
       refetch();

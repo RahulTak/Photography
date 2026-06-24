@@ -22,6 +22,8 @@ export const POST = withErrorHandler(async (req: Request) => {
     role: body.role,
     bio: body.bio,
     imageUrl: body.imageUrl,
+    sortOrder: body.sortOrder !== undefined ? Number(body.sortOrder) : undefined,
+    active: body.active !== undefined ? Boolean(body.active) : true,
   });
 
   return NextResponse.json({
