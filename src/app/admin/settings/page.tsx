@@ -35,9 +35,9 @@ export default function AdminSettingsPage() {
   } = useForm<SettingsFormInputs>({
     resolver: zodResolver(settingsSchema),
     defaultValues: {
-      studioName: "JP Photography",
+      studioName: "JP Click Studio",
       address: "Near Sharda Bal School, Nagaur, Raj 341001",
-      telephone: "+91 98860 12345",
+      telephone: "+91 88245 95859",
       email: "enquire@jpphotography.in",
       instagram: "",
       youtube: "",
@@ -54,7 +54,7 @@ export default function AdminSettingsPage() {
       reset({
         studioName: data.studioName || "JP Click Studio",
         address: data.address || "Near Sharda Bal School, Nagaur, Raj 341001",
-        telephone: data.telephone || "+91 98860 12345",
+        telephone: data.telephone || "+91 88245 95859",
         email: data.email || "enquire@jpphotography.in",
         instagram: data.instagram || "https://instagram.com",
         youtube: data.youtube || "https://youtube.com",

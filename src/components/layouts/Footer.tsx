@@ -18,7 +18,7 @@ export function Footer() {
   }, []);
 
   const { data: settingsRes } = useAdminSettings();
-  const settings = settingsRes?.data || {};
+  const settings = settingsRes || {};
 
   const address = settings.address || CONTACT_CONTENT.info.address;
   const phone = settings.telephone || CONTACT_CONTENT.info.phone;

@@ -9,11 +9,30 @@ import { NAV_LINKS } from "@/constants/routes";
 import { useScroll } from "@/hooks/useScroll";
 import { useUIStore } from "@/store/useUIStore";
 import { theme } from "@/config/theme";
+import { useAdminSettings } from "@/hooks/admin/useAdmin";
+
+const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    width="1.2em"
+    height="1.2em"
+    {...props}
+  >
+    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.457L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.725 1.45 5.556 0 10.076-4.522 10.079-10.082.002-2.693-1.04-5.225-2.935-7.122C16.524 1.503 14.004.46 11.312.46c-5.558 0-10.078 4.522-10.082 10.082-.001 1.91.506 3.774 1.47 5.434L1.758 21.94l6.096-1.597c.001.001 0 0 0 0zM17.01 14.39c-.272-.136-1.614-.797-1.863-.888-.25-.09-.432-.136-.614.137-.182.273-.705.888-.864 1.07-.159.182-.318.204-.59.069-.273-.136-1.15-.425-2.19-1.355-.808-.72-1.353-1.61-1.512-1.884-.159-.273-.017-.42.12-.556.123-.122.272-.318.408-.477.136-.16.182-.273.272-.455.09-.182.046-.341-.023-.477-.069-.136-.614-1.477-.841-2.023-.222-.533-.443-.46-.614-.469-.159-.008-.341-.01-.523-.01-.182 0-.477.069-.727.341-.25.273-.954.932-.954 2.273s.977 2.636 1.114 2.818c.136.182 1.92 2.932 4.653 4.113.65.28 1.157.447 1.55.573.656.208 1.253.179 1.725.108.527-.08 1.614-.66 1.841-1.295.228-.636.228-1.182.16-1.295-.069-.115-.25-.183-.523-.319z" />
+  </svg>
+);
 
 export function Navbar() {
   const pathname = usePathname();
   const scrolled = useScroll(20);
   const { isMobileMenuOpen, setMobileMenuOpen } = useUIStore();
+
+  const { data: settingsRes } = useAdminSettings();
+  const settings = settingsRes || {};
+  const telephone = settings.telephone || "+91 98860 12345";
+  const cleanPhone = telephone.replace(/[^0-9]/g, "");
+  const whatsappUrl = `https://wa.me/${cleanPhone}`;
 
   return (
     <>
@@ -72,8 +91,18 @@ export function Navbar() {
             })}
           </nav>
 
-          {/* Desktop Contact CTA Button */}
-          <div className="hidden md:block">
+          {/* Desktop Contact CTA Button & WhatsApp */}
+          <div className="hidden md:flex items-center gap-4">
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-5 py-2.5 border border-[#25D366]/30 hover:border-[#25D366] bg-[#25D366]/5 hover:bg-[#25D366]/10 text-xs uppercase tracking-widest text-[#25D366] hover:text-[#25D366] transition-all duration-500 rounded-sm font-sans"
+              style={{ letterSpacing: "0.15em" }}
+            >
+              <WhatsAppIcon className="w-4 h-4 animate-bounce hover:animate-none" />
+              <span>WhatsApp</span>
+            </a>
             <Link
               href="/contact"
               className="relative px-6 py-2.5 overflow-hidden group border border-luxury-accent/30 hover:border-luxury-accent text-xs uppercase tracking-widest text-white transition-all duration-500 rounded-sm font-sans"
@@ -121,11 +150,23 @@ export function Navbar() {
                   </Link>
                 );
               })}
-              <div className="pt-8">
+              
+              <div className="pt-8 flex flex-col space-y-4 items-center">
+                <a
+                  href={whatsappUrl}
+                  onClick={() => setMobileMenuOpen(false)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full max-w-[240px] px-8 py-3.5 border border-[#25D366]/30 hover:border-[#25D366] bg-[#25D366]/5 hover:bg-[#25D366]/10 text-[#25D366] text-xs font-semibold tracking-widest uppercase transition-all duration-300 rounded-sm flex items-center justify-center gap-2"
+                  style={{ letterSpacing: "0.15em" }}
+                >
+                  <WhatsAppIcon className="w-4 h-4" />
+                  WhatsApp Us
+                </a>
                 <Link
                   href="/contact"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="inline-block px-10 py-4 bg-luxury-accent hover:bg-luxury-hover text-luxury-bg text-sm font-semibold tracking-widest uppercase transition-all duration-300 rounded-sm"
+                  className="w-full max-w-[240px] px-8 py-3.5 bg-luxury-accent hover:bg-luxury-hover text-luxury-bg text-xs font-semibold tracking-widest uppercase transition-all duration-300 rounded-sm text-center"
                   style={{ letterSpacing: "0.15em" }}
                 >
                   Book Consultation
