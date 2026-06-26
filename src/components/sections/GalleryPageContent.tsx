@@ -58,7 +58,7 @@ export function GalleryPageContent() {
             <span className="mx-2">/</span>
             <span className="text-luxury-accent">Gallery</span>
           </nav>
-          <h1 className="text-4xl md:text-6xl font-serif text-white font-bold tracking-wide">
+          <h1 className="text-4xl md:text-6xl font-serif text-foreground font-bold tracking-wide">
             Portfolio Vault
           </h1>
           <p className="text-sm text-luxury-muted font-sans font-light max-w-lg mt-2 leading-relaxed">

@@ -12,21 +12,21 @@ export function FeaturedWork() {
   const featured = GALLERY_ITEMS.slice(0, 3);
 
   return (
-    <section className="py-24 bg-luxury-bg border-t border-luxury-border/30">
+    <section className="py-24 bg-background border-t border-border/30">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-4">
           <div className="flex flex-col space-y-2">
-            <span className="text-xs uppercase tracking-widest text-luxury-accent font-semibold" style={{ letterSpacing: "0.2em" }}>
+            <span className="text-xs uppercase tracking-widest text-accent font-semibold" style={{ letterSpacing: "0.2em" }}>
               PORTFOLIO HIGHLIGHTS
             </span>
-            <h2 className="text-3xl md:text-5xl font-serif text-white leading-tight">
+            <h2 className="text-3xl md:text-5xl font-serif text-foreground leading-tight">
               Featured Love Stories
             </h2>
           </div>
           <Link
             href="/gallery"
-            className="text-xs uppercase tracking-widest text-luxury-accent hover:text-luxury-hover border-b border-luxury-accent/30 hover:border-luxury-accent pb-1 transition-all duration-300 font-sans"
+            className="text-xs uppercase tracking-widest text-accent hover:text-accent border-b border-accent/30 hover:border-accent pb-1 transition-all duration-300 font-sans"
             style={{ letterSpacing: "0.15em" }}
           >
             Explore Complete Gallery &rarr;
@@ -48,27 +48,27 @@ export function FeaturedWork() {
               className="group relative flex flex-col space-y-4 cursor-pointer overflow-hidden rounded-sm"
             >
               {/* Image Container with Custom Zoom Scale */}
-              <div className="relative aspect-[3/4] overflow-hidden border border-luxury-border/40">
+              <div className="relative aspect-[3/4] overflow-hidden border border-border/40">
                 <motion.div
                   className="w-full h-full bg-cover bg-center transition-transform duration-1000 ease-out group-hover:scale-105"
                   style={{ backgroundImage: `url('${item.imageUrl}')` }}
                 />
                 {/* Overlay Vignette on Hover */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300" />
 
                 {/* Bottom Overlay Text details */}
-                <div className="absolute bottom-6 left-6 right-6 flex flex-col space-y-2 text-white">
-                  <span className="text-[10px] tracking-widest uppercase text-luxury-accent/90" style={{ letterSpacing: "0.15em" }}>
+                <div className="absolute bottom-6 left-6 right-6 flex flex-col space-y-2 text-foreground">
+                  <span className="text-[10px] tracking-widest uppercase text-accent/90" style={{ letterSpacing: "0.15em" }}>
                     {item.category}
                   </span>
                   <h3 className="font-serif text-xl md:text-2xl font-bold">{item.couple}</h3>
-                  <div className="flex items-center space-x-4 text-[10px] text-luxury-muted font-sans pt-1">
+                  <div className="flex items-center space-x-4 text-[10px] text-muted font-sans pt-1">
                     <span className="flex items-center gap-1">
-                      <MapPin size={10} className="text-luxury-accent/80" />
+                      <MapPin size={10} className="text-accent/80" />
                       {item.location.split(",")[0]}
                     </span>
                     <span className="flex items-center gap-1">
-                      <Calendar size={10} className="text-luxury-accent/80" />
+                      <Calendar size={10} className="text-accent/80" />
                       {item.year}
                     </span>
                   </div>

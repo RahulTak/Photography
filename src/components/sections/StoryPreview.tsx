@@ -13,7 +13,7 @@ export function StoryPreview() {
   const { tag, title, description, founders, foundersTitle, portraitImg, ctaText } = aboutPreview;
 
   return (
-    <section className="py-24 bg-luxury-sec border-t border-luxury-border/30">
+    <section className="py-24 bg-secondary border-t border-border/30">
       <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         {/* Story Text Box */}
         <motion.div
@@ -25,29 +25,29 @@ export function StoryPreview() {
         >
           <motion.span
             variants={fadeUp}
-            className="text-xs uppercase tracking-widest text-luxury-accent font-semibold"
+            className="text-xs uppercase tracking-widest text-accent font-semibold"
             style={{ letterSpacing: "0.2em" }}
           >
             {tag}
           </motion.span>
           <motion.h2
             variants={fadeUp}
-            className="text-3xl md:text-5xl font-serif text-white leading-tight"
+            className="text-3xl md:text-5xl font-serif text-foreground leading-tight"
           >
             {title}
           </motion.h2>
           <motion.p
             variants={fadeUp}
-            className="text-sm text-luxury-muted font-sans font-light leading-relaxed max-w-lg"
+            className="text-sm text-muted font-sans font-light leading-relaxed max-w-lg"
           >
             {description}
           </motion.p>
           
-          <motion.div variants={fadeUp} className="pt-4 border-l-2 border-luxury-accent/30 pl-6 my-4">
-            <p className="font-serif italic text-lg text-white/90">
+          <motion.div variants={fadeUp} className="pt-4 border-l-2 border-accent/30 pl-6 my-4">
+            <p className="font-serif italic text-lg text-foreground/90">
               &ldquo;The best photographs are not staged; they are the electric sparks of truth that occur between two heartbeats.&rdquo;
             </p>
-            <span className="block text-[11px] uppercase tracking-wider text-luxury-accent font-sans mt-3">
+            <span className="block text-[11px] uppercase tracking-wider text-accent font-sans mt-3">
               — {founders}, {foundersTitle}
             </span>
           </motion.div>
@@ -55,7 +55,7 @@ export function StoryPreview() {
           <motion.div variants={fadeUp} className="pt-2">
             <Link
               href="/about"
-              className="inline-block px-8 py-3.5 bg-transparent border border-white/20 hover:border-luxury-accent text-white text-xs font-sans uppercase tracking-widest font-semibold rounded-sm transition-all duration-300"
+              className="inline-block px-8 py-3.5 bg-transparent border border-border hover:border-accent text-foreground text-xs font-sans uppercase tracking-widest font-semibold rounded-sm transition-all duration-300 hover:bg-background/40"
               style={{ letterSpacing: "0.15em" }}
             >
               {ctaText}
@@ -69,10 +69,10 @@ export function StoryPreview() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-          className="relative justify-self-center lg:justify-self-end w-full max-w-md aspect-[3/4] border border-luxury-border/60"
+          className="relative justify-self-center lg:justify-self-end w-full max-w-md aspect-[3/4] border border-border/60"
         >
           {/* Framed Background Border */}
-          <div className="absolute -inset-4 border border-luxury-accent/20 -z-10 rounded-sm" />
+          <div className="absolute -inset-4 border border-accent/20 -z-10 rounded-sm" />
           
           {/* Image */}
           <div
@@ -81,9 +81,9 @@ export function StoryPreview() {
           />
 
           {/* Mini Floating Accolade badge */}
-          <div className="absolute -bottom-6 -left-6 bg-luxury-bg border border-luxury-border/80 px-6 py-4 rounded-sm shadow-xl flex flex-col space-y-1">
-            <span className="text-[20px] font-serif font-bold text-luxury-accent">2011</span>
-            <span className="text-[9px] uppercase tracking-widest text-white/75 font-sans" style={{ letterSpacing: "0.15em" }}>
+          <div className="absolute -bottom-6 -left-6 bg-background border border-border/80 px-6 py-4 rounded-sm shadow-xl flex flex-col space-y-1">
+            <span className="text-[20px] font-serif font-bold text-accent">2011</span>
+            <span className="text-[9px] uppercase tracking-widest text-foreground/75 font-sans" style={{ letterSpacing: "0.15em" }}>
               established
             </span>
           </div>

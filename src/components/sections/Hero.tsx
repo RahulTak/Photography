@@ -24,9 +24,9 @@ export function Hero() {
           style={{ backgroundImage: `url('${videoPlaceholderImg}')` }}
         />
         {/* Radial & Linear Gradients for Premium Cinematic Vignette */}
-        <div className="absolute inset-0 bg-gradient-to-t from-luxury-bg via-luxury-bg/50 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-b from-luxury-bg/40 to-transparent" />
-        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/40 to-transparent" />
+        <div className="absolute inset-0 bg-background/40" />
       </div>
 
       {/* Content Container */}
@@ -40,7 +40,7 @@ export function Hero() {
           {/* Subtitle */}
           <motion.span
             variants={fadeUp}
-            className="text-xs uppercase tracking-widest text-luxury-accent font-semibold font-sans"
+            className="text-xs uppercase tracking-widest text-accent font-semibold font-sans"
             style={{ letterSpacing: "0.25em" }}
           >
             {subtitle}
@@ -49,7 +49,7 @@ export function Hero() {
           {/* Heading */}
           <motion.h1
             variants={fadeUp}
-            className="text-4xl md:text-7xl lg:text-8xl font-serif text-white font-bold leading-tight"
+            className="text-4xl md:text-7xl lg:text-8xl font-serif text-foreground font-bold leading-tight"
           >
             {title}
           </motion.h1>
@@ -57,7 +57,7 @@ export function Hero() {
           {/* Slogan */}
           <motion.p
             variants={fadeUp}
-            className="text-sm md:text-lg text-luxury-muted font-sans font-light tracking-wide max-w-2xl leading-relaxed"
+            className="text-sm md:text-lg text-muted font-sans font-light tracking-wide max-w-2xl leading-relaxed"
           >
             {description}
           </motion.p>
@@ -66,14 +66,14 @@ export function Hero() {
           <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center gap-6 pt-4">
             <Link
               href="/gallery"
-              className="px-8 py-3.5 bg-luxury-accent hover:bg-luxury-hover text-luxury-bg text-xs font-sans uppercase tracking-widest font-semibold rounded-sm transition-all duration-300 shadow-lg shadow-luxury-accent/15"
+              className="px-8 py-3.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-sans uppercase tracking-widest font-semibold rounded-sm transition-all duration-300 shadow-lg shadow-primary/15"
               style={{ letterSpacing: "0.15em" }}
             >
               {ctaPrimary}
             </Link>
             <Link
               href="/contact"
-              className="px-8 py-3.5 border border-white/20 hover:border-luxury-accent text-white text-xs font-sans uppercase tracking-widest font-semibold rounded-sm transition-all duration-300"
+              className="px-8 py-3.5 border border-border hover:border-accent text-foreground text-xs font-sans uppercase tracking-widest font-semibold rounded-sm transition-all duration-300 hover:bg-secondary/40"
               style={{ letterSpacing: "0.15em" }}
             >
               {ctaSecondary}

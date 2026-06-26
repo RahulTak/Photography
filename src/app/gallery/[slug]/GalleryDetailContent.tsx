@@ -65,7 +65,7 @@ export function GalleryDetailContent({ item }: GalleryDetailContentProps) {
   return (
     <PageWrapper>
       {/* Luxury Cover Header */}
-      <section className="relative h-[65vh] w-full overflow-hidden bg-luxury-bg border-b border-luxury-border/30">
+      <section className="relative h-[65vh] w-full overflow-hidden bg-background border-b border-border/30">
         {/* Parallax Cover Image */}
         <div className="absolute inset-0 w-full h-full">
           <img
@@ -73,14 +73,14 @@ export function GalleryDetailContent({ item }: GalleryDetailContentProps) {
             alt={item.title}
             className="w-full h-full object-cover object-center transform scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-luxury-bg via-luxury-bg/40 to-black/60" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-black/60" />
         </div>
 
         {/* Back and Breadcrumbs Navigation */}
         <div className="absolute top-8 left-0 right-0 z-10 max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">
           <Link
             href="/gallery"
-            className="flex items-center gap-2 px-4 py-2 bg-luxury-bg/60 backdrop-blur-md border border-luxury-border/40 text-xs font-sans uppercase tracking-widest text-luxury-text hover:text-luxury-accent transition-all duration-300 rounded-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-background/60 backdrop-blur-md border border-border/40 text-xs font-sans uppercase tracking-widest text-foreground hover:text-accent transition-all duration-300 rounded-sm"
             style={{ letterSpacing: "0.15em" }}
           >
             <ArrowLeft size={12} />
@@ -88,24 +88,24 @@ export function GalleryDetailContent({ item }: GalleryDetailContentProps) {
           </Link>
 
           <nav className="hidden sm:flex text-[9px] uppercase tracking-widest text-white/70 font-sans" style={{ letterSpacing: "0.2em" }}>
-            <Link href="/" className="hover:text-white transition-colors">Home</Link>
+            <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
             <span className="mx-2 text-white/30">/</span>
-            <Link href="/gallery" className="hover:text-white transition-colors">Gallery</Link>
+            <Link href="/gallery" className="hover:text-foreground transition-colors">Gallery</Link>
             <span className="mx-2 text-white/30">/</span>
-            <span className="text-luxury-accent font-bold">{item.title}</span>
+            <span className="text-accent font-bold">{item.title}</span>
           </nav>
         </div>
 
         {/* Dynamic Cover Metadata Overlay */}
         <div className="absolute bottom-10 left-0 right-0 z-10 max-w-7xl mx-auto px-6 md:px-12">
           <div className="max-w-2xl">
-            <span className="text-[10px] uppercase tracking-widest text-luxury-accent font-bold bg-luxury-accent/15 px-3 py-1 border border-luxury-accent/30 rounded-sm mb-4 inline-block" style={{ letterSpacing: "0.2em" }}>
+            <span className="text-[10px] uppercase tracking-widest text-accent font-bold bg-accent/15 px-3 py-1 border border-accent/30 rounded-sm mb-4 inline-block" style={{ letterSpacing: "0.2em" }}>
               {item.category}
             </span>
             <h1 className="text-4xl md:text-6xl font-serif font-bold text-white tracking-wide leading-tight mt-2">
               {item.title}
             </h1>
-            <p className="text-sm font-sans font-light text-luxury-muted mt-2">
+            <p className="text-sm font-sans font-light text-muted mt-2">
               A bespoke photography chronicle of {item.couple}
             </p>
           </div>
@@ -113,17 +113,17 @@ export function GalleryDetailContent({ item }: GalleryDetailContentProps) {
       </section>
 
       {/* Narrative Section & Specs */}
-      <section className="py-16 bg-luxury-bg">
+      <section className="py-16 bg-background">
         <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Narrative Text */}
           <div className="lg:col-span-2 space-y-6">
             <div className="flex items-center gap-2">
-              <div className="h-px w-8 bg-luxury-accent" />
-              <span className="text-[10px] font-sans font-bold uppercase tracking-widest text-luxury-accent" style={{ letterSpacing: "0.2em" }}>
+              <div className="h-px w-8 bg-accent" />
+              <span className="text-[10px] font-sans font-bold uppercase tracking-widest text-accent" style={{ letterSpacing: "0.2em" }}>
                 The Story
               </span>
             </div>
-            <p className="font-serif text-lg md:text-xl text-luxury-text leading-relaxed font-light italic">
+            <p className="font-serif text-lg md:text-xl text-foreground leading-relaxed font-light italic">
               {item.description || 
                 `An editorial documentary of moments, details, and vows captured in their purest form. Every frames tells a story.`
               }
@@ -131,31 +131,31 @@ export function GalleryDetailContent({ item }: GalleryDetailContentProps) {
           </div>
 
           {/* Details Sidebar card */}
-          <div className="bg-luxury-sec border border-luxury-border/60 p-8 rounded-sm self-start shadow-sm">
-            <h3 className="text-xs font-sans font-bold uppercase tracking-widest text-luxury-accent border-b border-luxury-border/40 pb-4 mb-6" style={{ letterSpacing: "0.2em" }}>
+          <div className="bg-card border border-border/60 p-8 rounded-sm self-start shadow-sm">
+            <h3 className="text-xs font-sans font-bold uppercase tracking-widest text-accent border-b border-border/40 pb-4 mb-6" style={{ letterSpacing: "0.2em" }}>
               Shoot Information
             </h3>
             <ul className="space-y-4 text-xs font-sans">
-              <li className="flex items-center justify-between text-luxury-muted">
+              <li className="flex items-center justify-between text-muted">
                 <span className="flex items-center gap-2">
-                  <User size={12} className="text-luxury-accent" />
+                  <User size={12} className="text-accent" />
                   Couple
                 </span>
-                <span className="text-luxury-text font-medium">{item.couple}</span>
+                <span className="text-foreground font-medium">{item.couple}</span>
               </li>
-              <li className="flex items-center justify-between text-luxury-muted">
+              <li className="flex items-center justify-between text-muted">
                 <span className="flex items-center gap-2">
-                  <MapPin size={12} className="text-luxury-accent" />
+                  <MapPin size={12} className="text-accent" />
                   Location
                 </span>
-                <span className="text-luxury-text font-medium">{item.location}</span>
+                <span className="text-foreground font-medium">{item.location}</span>
               </li>
-              <li className="flex items-center justify-between text-luxury-muted">
+              <li className="flex items-center justify-between text-muted">
                 <span className="flex items-center gap-2">
-                  <Calendar size={12} className="text-luxury-accent" />
+                  <Calendar size={12} className="text-accent" />
                   Year
                 </span>
-                <span className="text-luxury-text font-medium">{item.year}</span>
+                <span className="text-foreground font-medium">{item.year}</span>
               </li>
             </ul>
           </div>
@@ -163,18 +163,18 @@ export function GalleryDetailContent({ item }: GalleryDetailContentProps) {
       </section>
 
       {/* Asymmetric Gallery Masonry */}
-      <section className="pb-24 bg-luxury-bg">
+      <section className="pb-24 bg-background">
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           <div className="flex items-center gap-2 mb-10">
-            <div className="h-px w-8 bg-luxury-accent" />
-            <span className="text-[10px] font-sans font-bold uppercase tracking-widest text-luxury-accent" style={{ letterSpacing: "0.2em" }}>
+            <div className="h-px w-8 bg-accent" />
+            <span className="text-[10px] font-sans font-bold uppercase tracking-widest text-accent" style={{ letterSpacing: "0.2em" }}>
               The Showcase ({images.length} images)
             </span>
           </div>
 
           {images.length === 0 ? (
-            <div className="text-center py-20 border border-dashed border-luxury-border/40 bg-luxury-sec/30 rounded-sm">
-              <p className="text-luxury-muted font-sans text-xs">No showcase images loaded for this shoot.</p>
+            <div className="text-center py-20 border border-dashed border-border/40 bg-secondary/30 rounded-sm">
+              <p className="text-muted font-sans text-xs">No showcase images loaded for this shoot.</p>
             </div>
           ) : (
             <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
@@ -188,7 +188,7 @@ export function GalleryDetailContent({ item }: GalleryDetailContentProps) {
                     viewport={{ once: true }}
                     transition={{ duration: 0.6, delay: (index % 3) * 0.1 }}
                     onClick={() => openLightbox(index)}
-                    className="break-inside-avoid group relative overflow-hidden border border-luxury-border/50 rounded-sm cursor-pointer mb-6"
+                    className="break-inside-avoid group relative overflow-hidden border border-border/50 rounded-sm cursor-pointer mb-6"
                   >
                     <div className={`relative ${aspectClass} overflow-hidden`}>
                       <img
@@ -198,7 +198,7 @@ export function GalleryDetailContent({ item }: GalleryDetailContentProps) {
                         className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                        <span className="px-4 py-2 bg-luxury-bg/85 backdrop-blur-sm border border-luxury-accent/30 text-[9px] uppercase tracking-widest text-luxury-accent rounded-sm font-sans" style={{ letterSpacing: "0.15em" }}>
+                        <span className="px-4 py-2 bg-background/85 backdrop-blur-sm border border-accent/30 text-[9px] uppercase tracking-widest text-accent rounded-sm font-sans" style={{ letterSpacing: "0.15em" }}>
                           View Image
                         </span>
                       </div>
@@ -224,7 +224,7 @@ export function GalleryDetailContent({ item }: GalleryDetailContentProps) {
             {/* Close Trigger Button */}
             <button
               onClick={closeLightbox}
-              className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors duration-300 p-2 z-10 bg-black/40 rounded-full border border-white/10 backdrop-blur-sm hover:border-luxury-accent/40"
+              className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors duration-300 p-2 z-10 bg-black/40 rounded-full border border-white/10 backdrop-blur-sm hover:border-accent/40"
               aria-label="Close lightbox"
             >
               <X size={20} />
@@ -233,7 +233,7 @@ export function GalleryDetailContent({ item }: GalleryDetailContentProps) {
             {/* Left Navigation Button */}
             <button
               onClick={prevImage}
-              className="absolute left-6 text-white/50 hover:text-white transition-colors duration-300 p-3 z-10 bg-black/40 rounded-full border border-white/10 backdrop-blur-sm hover:border-luxury-accent/40"
+              className="absolute left-6 text-white/50 hover:text-white transition-colors duration-300 p-3 z-10 bg-black/40 rounded-full border border-white/10 backdrop-blur-sm hover:border-accent/40"
               aria-label="Previous image"
             >
               <ChevronLeft size={24} />
@@ -242,7 +242,7 @@ export function GalleryDetailContent({ item }: GalleryDetailContentProps) {
             {/* Right Navigation Button */}
             <button
               onClick={nextImage}
-              className="absolute right-6 text-white/50 hover:text-white transition-colors duration-300 p-3 z-10 bg-black/40 rounded-full border border-white/10 backdrop-blur-sm hover:border-luxury-accent/40"
+              className="absolute right-6 text-white/50 hover:text-white transition-colors duration-300 p-3 z-10 bg-black/40 rounded-full border border-white/10 backdrop-blur-sm hover:border-accent/40"
               aria-label="Next image"
             >
               <ChevronRight size={24} />
@@ -264,7 +264,7 @@ export function GalleryDetailContent({ item }: GalleryDetailContentProps) {
 
               {/* Progress and Shoot Info Footer */}
               <div className="text-center text-white/80 space-y-1 font-sans">
-                <span className="text-[9px] uppercase tracking-widest text-luxury-accent" style={{ letterSpacing: "0.2em" }}>
+                <span className="text-[9px] uppercase tracking-widest text-accent" style={{ letterSpacing: "0.2em" }}>
                   {item.title} &bull; Image {lightboxIndex + 1} of {images.length}
                 </span>
                 <p className="text-[10px] text-white/50">{item.location} &bull; {item.year}</p>

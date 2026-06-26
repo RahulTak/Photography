@@ -16,25 +16,25 @@ export function WhyChooseUs() {
   const getIcon = (id: string) => {
     switch (id) {
       case "editorial":
-        return <Camera className="text-luxury-accent" size={24} />;
+        return <Camera className="text-accent" size={24} />;
       case "candid":
-        return <Sparkles className="text-luxury-accent" size={24} />;
+        return <Sparkles className="text-accent" size={24} />;
       case "luxury":
-        return <Award className="text-luxury-accent" size={24} />;
+        return <Award className="text-accent" size={24} />;
       default:
-        return <Globe className="text-luxury-accent" size={24} />;
+        return <Globe className="text-accent" size={24} />;
     }
   };
 
   return (
-    <section className="py-24 bg-luxury-bg border-t border-luxury-border/30">
+    <section className="py-24 bg-background border-t border-border/30">
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         {/* Section Header */}
         <div className="flex flex-col items-center text-center mb-16 space-y-3">
-          <span className="text-xs uppercase tracking-widest text-luxury-accent font-semibold" style={{ letterSpacing: "0.2em" }}>
+          <span className="text-xs uppercase tracking-widest text-accent font-semibold" style={{ letterSpacing: "0.2em" }}>
             {tag}
           </span>
-          <h2 className="text-3xl md:text-5xl font-serif text-white max-w-2xl leading-tight">
+          <h2 className="text-3xl md:text-5xl font-serif text-foreground max-w-2xl leading-tight">
             {title}
           </h2>
         </div>
@@ -51,15 +51,15 @@ export function WhyChooseUs() {
             <motion.div
               key={feat.id}
               variants={fadeUp}
-              className="flex flex-col space-y-4 p-8 bg-luxury-sec border border-luxury-border/40 hover:border-luxury-accent/30 transition-all duration-300 rounded-sm hover:-translate-y-1"
+              className="flex flex-col space-y-4 p-8 bg-card border border-border/40 hover:border-accent/30 transition-all duration-300 rounded-sm hover:-translate-y-1"
             >
-              <div className="w-12 h-12 flex items-center justify-center bg-luxury-bg border border-luxury-border/60 rounded-sm">
+              <div className="w-12 h-12 flex items-center justify-center bg-background border border-border/60 rounded-sm">
                 {getIcon(feat.id)}
               </div>
-              <h3 className="font-serif text-lg text-white font-bold tracking-wide">
+              <h3 className="font-serif text-lg text-foreground font-bold tracking-wide">
                 {feat.title}
               </h3>
-              <p className="text-xs text-luxury-muted font-sans font-light leading-relaxed">
+              <p className="text-xs text-muted font-sans font-light leading-relaxed">
                 {feat.description}
               </p>
             </motion.div>

@@ -40,7 +40,7 @@ export function Navbar() {
       <header
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
           scrolled
-            ? "bg-luxury-bg/85 backdrop-blur-md border-b border-luxury-border/60 py-4"
+            ? "bg-background/85 backdrop-blur-md border-b border-border/60 py-4"
             : "bg-transparent py-6"
         }`}
       >
@@ -50,17 +50,17 @@ export function Navbar() {
             <img
               src="/logo.png"
               alt="JP Click Studio Logo"
-              className="h-10 w-10 bg-white object-contain rounded-sm border border-luxury-border/60 transition-transform duration-500 group-hover:scale-105"
+              className="h-10 w-10 bg-card object-contain rounded-sm border border-border/60 transition-transform duration-500 group-hover:scale-105"
             />
             <div className="flex flex-col">
               <span
-                className="font-serif text-lg font-bold tracking-widest text-luxury-accent leading-none group-hover:text-luxury-accent/50 transition-colors duration-300"
+                className="font-serif text-lg font-bold tracking-widest text-accent leading-none group-hover:text-accent/50 transition-colors duration-300"
                 style={{ letterSpacing: "0.12em" }}
               >
                 JP Click Studio
               </span>
               <span
-                className="text-[7px] tracking-widest uppercase text-luxury-accent/80 mt-1.5 leading-none"
+                className="text-[7px] tracking-widest uppercase text-accent/80 mt-1.5 leading-none"
                 style={{ letterSpacing: "0.22em" }}
               >
                 fine art stories
@@ -76,14 +76,14 @@ export function Navbar() {
                 <Link
                   key={link.path}
                   href={link.path}
-                  className="relative py-2 text-xs uppercase tracking-widest text-luxury-text/80 hover:text-luxury-accent transition-colors duration-300 font-sans"
+                  className="relative py-2 text-xs uppercase tracking-widest text-foreground/80 hover:text-accent transition-colors duration-300 font-sans"
                   style={{ letterSpacing: "0.15em" }}
                 >
                   {link.name}
                   {isActive && (
                     <motion.span
                       layoutId="activeNavLine"
-                      className="absolute bottom-0 left-0 w-full h-[1px] bg-luxury-accent"
+                      className="absolute bottom-0 left-0 w-full h-[1px] bg-accent"
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}
@@ -107,18 +107,18 @@ export function Navbar() {
             </a>
             <Link
               href="/contact"
-              className="relative px-6 py-2.5 overflow-hidden group border border-luxury-accent/30 hover:border-luxury-accent text-xs uppercase tracking-widest text-white transition-all duration-500 rounded-sm font-sans"
+              className="relative px-6 py-2.5 overflow-hidden group border border-accent/30 hover:border-accent text-xs uppercase tracking-widest text-foreground transition-all duration-500 rounded-sm font-sans"
               style={{ letterSpacing: "0.15em" }}
             >
-              <span className="absolute inset-0 w-full h-full bg-luxury-accent/10 transform scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500 ease-out" />
-              <span className="relative z-10 group-hover:text-white">Inquire</span>
+              <span className="absolute inset-0 w-full h-full bg-accent/10 transform scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500 ease-out" />
+              <span className="relative z-10 group-hover:text-foreground">Inquire</span>
             </Link>
           </div>
 
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden text-white hover:text-luxury-accent transition-colors duration-300 p-2"
+            className="md:hidden text-foreground hover:text-accent transition-colors duration-300 p-2"
             aria-label="Toggle menu"
           >
             {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -134,7 +134,7 @@ export function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="fixed inset-0 z-40 bg-luxury-bg flex flex-col justify-center px-8 md:hidden"
+            className="fixed inset-0 z-40 bg-background flex flex-col justify-center px-8 md:hidden"
           >
             <div className="flex flex-col space-y-8 text-center">
               {NAV_LINKS.map((link) => {
@@ -144,8 +144,8 @@ export function Navbar() {
                     key={link.path}
                     href={link.path}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`font-serif text-3xl tracking-wider hover:text-luxury-accent transition-colors duration-300 ${
-                      isActive ? "text-luxury-accent font-semibold" : "text-white"
+                    className={`font-serif text-3xl tracking-wider hover:text-accent transition-colors duration-300 ${
+                      isActive ? "text-accent font-semibold" : "text-foreground"
                     }`}
                   >
                     {link.name}
@@ -169,7 +169,7 @@ export function Navbar() {
                 <Link
                   href="/contact"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full max-w-[240px] px-8 py-3.5 bg-luxury-accent hover:bg-luxury-hover text-luxury-bg text-xs font-semibold tracking-widest uppercase transition-all duration-300 rounded-sm text-center"
+                  className="w-full max-w-[240px] px-8 py-3.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold tracking-widest uppercase transition-all duration-300 rounded-sm text-center"
                   style={{ letterSpacing: "0.15em" }}
                 >
                   Book Consultation
