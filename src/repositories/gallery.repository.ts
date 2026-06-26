@@ -2,7 +2,13 @@ import { prisma } from "@/db/prisma";
 
 export const galleryRepository = {
   // Find all active gallery items with cursor/offset pagination and category filters
-  async findMany(params: { category?: string; page?: number; limit?: number }) {
+  async findMany(params: {
+    category?: string;
+    page?: number;
+    limit?: number;
+    active?: boolean;
+    featured?: boolean;
+  }) {
     const page = params.page || 1;
     const limit = params.limit || 6;
     const skip = (page - 1) * limit;
@@ -17,6 +23,14 @@ export const galleryRepository = {
           equals: params.category,
         },
       };
+    }
+
+    if (params.active !== undefined) {
+      where.active = params.active;
+    }
+
+    if (params.featured !== undefined) {
+      where.featured = params.featured;
     }
 
     const [items, totalCount] = await Promise.all([
@@ -37,11 +51,16 @@ export const galleryRepository = {
     const mappedItems = items.map((item) => ({
       id: item.id,
       title: item.title,
+      slug: item.slug,
       category: item.category.name,
-      imageUrl: item.imageUrl,
+      coverImage: item.coverImage,
+      imageUrl: item.coverImage || item.imageUrl, // fallback mapping
       location: item.location,
       couple: item.couple,
       year: item.year,
+      featured: item.featured,
+      active: item.active,
+      description: item.description,
     }));
 
     return {
@@ -50,15 +69,23 @@ export const galleryRepository = {
     };
   },
 
-  // Find a specific gallery item by ID
-  async findById(id: string) {
+  // Find a specific gallery item by ID or Slug
+  async findBySlugOrId(idOrSlug: string) {
     const item = await prisma.gallery.findFirst({
       where: {
-        id,
         deletedAt: null,
+        OR: [
+          { id: idOrSlug },
+          { slug: idOrSlug }
+        ]
       },
       include: {
         category: true,
+        images: {
+          orderBy: {
+            sortOrder: "asc"
+          }
+        }
       },
     });
 
@@ -67,12 +94,27 @@ export const galleryRepository = {
     return {
       id: item.id,
       title: item.title,
+      slug: item.slug,
       category: item.category.name,
-      imageUrl: item.imageUrl,
+      coverImage: item.coverImage,
+      imageUrl: item.coverImage || item.imageUrl,
+      description: item.description,
       location: item.location,
       couple: item.couple,
       year: item.year,
+      active: item.active,
+      featured: item.featured,
+      images: item.images.map((img) => ({
+        id: img.id,
+        imageUrl: img.imageUrl,
+        sortOrder: img.sortOrder,
+      })),
     };
+  },
+
+  // Find a specific gallery item by ID (kept for backward compatibility with simple routes)
+  async findById(id: string) {
+    return this.findBySlugOrId(id);
   },
 
   // Get list of active categories
@@ -91,11 +133,16 @@ export const galleryRepository = {
   // Create gallery item, connecting to or creating the category
   async create(data: {
     title: string;
+    slug?: string;
     category: string;
-    imageUrl: string;
+    coverImage: string;
+    description?: string;
     location: string;
     couple: string;
     year: string;
+    active?: boolean;
+    featured?: boolean;
+    images?: string[];
   }) {
     // Find or create category
     const category = await prisma.galleryCategory.upsert({
@@ -104,28 +151,56 @@ export const galleryRepository = {
       create: { name: data.category },
     });
 
+    const slug = data.slug || data.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
     const item = await prisma.gallery.create({
       data: {
         title: data.title,
+        slug,
         categoryId: category.id,
-        imageUrl: data.imageUrl,
+        coverImage: data.coverImage,
+        imageUrl: data.coverImage,
         location: data.location,
         couple: data.couple,
         year: data.year,
+        description: data.description || "",
+        active: data.active !== undefined ? data.active : true,
+        featured: data.featured !== undefined ? data.featured : false,
+        images: data.images && data.images.length > 0 ? {
+          create: data.images.map((imgUrl, idx) => ({
+            imageUrl: imgUrl,
+            sortOrder: idx,
+          }))
+        } : undefined,
       },
       include: {
         category: true,
+        images: {
+          orderBy: {
+            sortOrder: "asc"
+          }
+        }
       },
     });
 
     return {
       id: item.id,
       title: item.title,
+      slug: item.slug,
       category: item.category.name,
-      imageUrl: item.imageUrl,
+      coverImage: item.coverImage,
+      imageUrl: item.coverImage,
+      description: item.description,
       location: item.location,
       couple: item.couple,
       year: item.year,
+      active: item.active,
+      featured: item.featured,
+      images: item.images.map((img) => ({
+        id: img.id,
+        imageUrl: img.imageUrl,
+        sortOrder: img.sortOrder,
+      })),
     };
   },
 
@@ -134,19 +209,31 @@ export const galleryRepository = {
     id: string,
     data: Partial<{
       title: string;
+      slug: string;
       category: string;
-      imageUrl: string;
+      coverImage: string;
+      description: string;
       location: string;
       couple: string;
       year: string;
+      active: boolean;
+      featured: boolean;
+      images: string[];
     }>
   ) {
     const updateData: any = {};
     if (data.title) updateData.title = data.title;
-    if (data.imageUrl) updateData.imageUrl = data.imageUrl;
-    if (data.location) updateData.location = data.location;
-    if (data.couple) updateData.couple = data.couple;
-    if (data.year) updateData.year = data.year;
+    if (data.slug) updateData.slug = data.slug;
+    if (data.coverImage) {
+      updateData.coverImage = data.coverImage;
+      updateData.imageUrl = data.coverImage;
+    }
+    if (data.description !== undefined) updateData.description = data.description;
+    if (data.location !== undefined) updateData.location = data.location;
+    if (data.couple !== undefined) updateData.couple = data.couple;
+    if (data.year !== undefined) updateData.year = data.year;
+    if (data.active !== undefined) updateData.active = data.active;
+    if (data.featured !== undefined) updateData.featured = data.featured;
 
     if (data.category) {
       const category = await prisma.galleryCategory.upsert({
@@ -157,22 +244,54 @@ export const galleryRepository = {
       updateData.categoryId = category.id;
     }
 
+    if (data.images) {
+      // First clean existing associated images
+      await prisma.galleryImage.deleteMany({
+        where: { galleryId: id },
+      });
+
+      // Insert new ordered list of images
+      if (data.images.length > 0) {
+        updateData.images = {
+          create: data.images.map((imgUrl, idx) => ({
+            imageUrl: imgUrl,
+            sortOrder: idx,
+          })),
+        };
+      }
+    }
+
     const item = await prisma.gallery.update({
       where: { id },
       data: updateData,
       include: {
         category: true,
+        images: {
+          orderBy: {
+            sortOrder: "asc"
+          }
+        }
       },
     });
 
     return {
       id: item.id,
       title: item.title,
+      slug: item.slug,
       category: item.category.name,
-      imageUrl: item.imageUrl,
+      coverImage: item.coverImage,
+      imageUrl: item.coverImage,
+      description: item.description,
       location: item.location,
       couple: item.couple,
       year: item.year,
+      active: item.active,
+      featured: item.featured,
+      images: item.images.map((img) => ({
+        id: img.id,
+        imageUrl: img.imageUrl,
+        sortOrder: img.sortOrder,
+      })),
     };
   },
 

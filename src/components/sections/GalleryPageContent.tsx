@@ -2,26 +2,18 @@
 
 import React, { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { motion } from "framer-motion";
 import { useGalleryInfinite } from "@/hooks/useGallery";
 import { useUIStore } from "@/store/useUIStore";
 import { GALLERY_CATEGORIES } from "@/constants/gallery";
 import { PageWrapper } from "@/components/layouts/PageWrapper";
-import { ChevronLeft, ChevronRight, X, MapPin, Calendar, Film } from "lucide-react";
+import { MapPin } from "lucide-react";
 
 export function GalleryPageContent() {
   const searchParams = useSearchParams();
   const activeCategory = useUIStore((state) => state.activeGalleryCategory);
   const setActiveCategory = useUIStore((state) => state.setActiveGalleryCategory);
-
-  const {
-    isLightboxOpen,
-    lightboxIndex,
-    openLightbox,
-    closeLightbox,
-    nextLightbox,
-    prevLightbox,
-  } = useUIStore();
 
   // Sync category filter from query params if present (e.g. /gallery?cat=wedding)
   useEffect(() => {
@@ -45,7 +37,6 @@ export function GalleryPageContent() {
 
   // Flattened array of all items loaded so far
   const items = data ? data.pages.flatMap((page) => page.items) : [];
-  const currentItem = items[lightboxIndex];
 
   // Helper for dynamic masonry aspect ratio classes
   const getAspectClass = (index: number) => {
@@ -63,7 +54,7 @@ export function GalleryPageContent() {
         <div className="max-w-7xl mx-auto px-6 md:px-12">
           {/* Breadcrumb */}
           <nav className="text-[10px] uppercase tracking-widest text-luxury-muted mb-4 font-sans" style={{ letterSpacing: "0.2em" }}>
-            <span className="hover:text-white transition-colors duration-300">Home</span>
+            <Link href="/" className="hover:text-white transition-colors duration-300">Home</Link>
             <span className="mx-2">/</span>
             <span className="text-luxury-accent">Gallery</span>
           </nav>
@@ -85,7 +76,6 @@ export function GalleryPageContent() {
                 key={cat}
                 onClick={() => {
                   setActiveCategory(cat);
-                  closeLightbox();
                 }}
                 className={`px-5 py-2 text-[10px] font-sans font-bold uppercase tracking-widest transition-all duration-300 rounded-sm border ${
                   activeCategory === cat
@@ -120,36 +110,40 @@ export function GalleryPageContent() {
               {/* Asymmetric Grid */}
               <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
                 {items.map((item, index) => (
-                  <motion.div
+                  <Link
                     key={item.id}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: (index % 3) * 0.1 }}
-                    onClick={() => openLightbox(index)}
-                    className="break-inside-avoid group relative overflow-hidden border border-luxury-border/50 rounded-sm cursor-pointer mb-6"
+                    href={`/gallery/${item.slug || item.id}`}
+                    className="block break-inside-avoid mb-6"
                   >
-                    <div className={`relative ${getAspectClass(index)} overflow-hidden`}>
-                      <img
-                        src={item.imageUrl}
-                        alt={item.title}
-                        loading="lazy"
-                        className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
-                      />
-                      {/* Dark overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-300" />
-                      
-                      {/* Hover Info */}
-                      <div className="absolute bottom-5 left-5 right-5 flex flex-col text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                        <span className="text-[8px] uppercase tracking-widest text-luxury-accent/90" style={{ letterSpacing: "0.15em" }}>
-                          {item.category}
-                        </span>
-                        <h3 className="font-serif text-lg font-bold mt-1 leading-snug">{item.couple}</h3>
-                        <p className="text-[9px] text-luxury-muted font-sans flex items-center gap-1 mt-1">
-                          <MapPin size={8} /> {item.location}
-                        </p>
+                    <motion.div
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: (index % 3) * 0.1 }}
+                      className="group relative overflow-hidden border border-luxury-border/50 rounded-sm cursor-pointer"
+                    >
+                      <div className={`relative ${getAspectClass(index)} overflow-hidden`}>
+                        <img
+                          src={item.imageUrl}
+                          alt={item.title}
+                          loading="lazy"
+                          className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
+                        />
+                        {/* Dark overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-300" />
+                        
+                        {/* Hover Info */}
+                        <div className="absolute bottom-5 left-5 right-5 flex flex-col text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                          <span className="text-[8px] uppercase tracking-widest text-luxury-accent/90" style={{ letterSpacing: "0.15em" }}>
+                            {item.category}
+                          </span>
+                          <h3 className="font-serif text-lg font-bold mt-1 leading-snug">{item.couple}</h3>
+                          <p className="text-[9px] text-luxury-muted font-sans flex items-center gap-1 mt-1">
+                            <MapPin size={8} /> {item.location}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </motion.div>
+                    </motion.div>
+                  </Link>
                 ))}
               </div>
 
@@ -170,77 +164,6 @@ export function GalleryPageContent() {
           )}
         </div>
       </section>
-
-      {/* Lightbox Overlay */}
-      <AnimatePresence>
-        {isLightboxOpen && currentItem && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/98 flex items-center justify-center p-6 md:p-12"
-          >
-            {/* Close Trigger */}
-            <button
-              onClick={closeLightbox}
-              className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors duration-300 p-2 z-10"
-              aria-label="Close lightbox"
-            >
-              <X size={26} />
-            </button>
-
-            {/* Left/Right Navigation */}
-            <button
-              onClick={() => prevLightbox(items.length)}
-              className="absolute left-6 text-white/50 hover:text-white transition-colors duration-300 p-2 z-10"
-              aria-label="Previous image"
-            >
-              <ChevronLeft size={36} />
-            </button>
-
-            <button
-              onClick={() => nextLightbox(items.length)}
-              className="absolute right-6 text-white/50 hover:text-white transition-colors duration-300 p-2 z-10"
-              aria-label="Next image"
-            >
-              <ChevronRight size={36} />
-            </button>
-
-            {/* Main Lightbox Content */}
-            <div className="flex flex-col max-w-5xl w-full h-full items-center justify-center space-y-6">
-              <div className="relative max-h-[75vh] w-full flex items-center justify-center">
-                <motion.img
-                  key={currentItem.id}
-                  initial={{ scale: 0.95, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ duration: 0.4 }}
-                  src={currentItem.imageUrl}
-                  alt={currentItem.title}
-                  className="max-h-[70vh] max-w-full object-contain border border-white/5"
-                />
-              </div>
-
-              {/* Image Info Footer */}
-              <div className="text-center text-white space-y-1">
-                <span className="text-[9px] uppercase tracking-widest text-luxury-accent" style={{ letterSpacing: "0.25em" }}>
-                  {currentItem.category}
-                </span>
-                <h2 className="font-serif text-2xl md:text-3xl font-bold">{currentItem.couple}</h2>
-                <div className="flex items-center justify-center space-x-6 text-[10px] text-luxury-muted font-sans pt-1">
-                  <span className="flex items-center gap-1">
-                    <MapPin size={10} className="text-luxury-accent" />
-                    {currentItem.location}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Calendar size={10} className="text-luxury-accent" />
-                    {currentItem.year}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </PageWrapper>
   );
 }

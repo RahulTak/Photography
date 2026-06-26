@@ -6,9 +6,9 @@ import { GalleryItem } from "@/types/gallery";
 
 export const galleryService = {
   // GET /gallery
-  getGallery: async (category?: string, page = 1, limit = 6): Promise<{ items: GalleryItem[]; hasMore: boolean }> => {
+  getGallery: async (category?: string, page = 1, limit = 6, active?: boolean): Promise<{ items: GalleryItem[]; hasMore: boolean }> => {
     try {
-      const response = await apiClient.get(API_ENDPOINTS.GALLERY, { params: { category, page, limit } });
+      const response = await apiClient.get(API_ENDPOINTS.GALLERY, { params: { category, page, limit, active } });
       
       // Parse with Zod schema for safety
       const parsed = galleryResponseSchema.safeParse(response.data);
@@ -23,9 +23,14 @@ export const galleryService = {
       // Simulate slight latency to keep transitions smooth
       await new Promise((resolve) => setTimeout(resolve, 300));
 
-      const filtered = !category || category === "All"
+      let filtered = !category || category === "All"
         ? GALLERY_ITEMS
         : GALLERY_ITEMS.filter((item) => item.category.toLowerCase() === category.toLowerCase());
+
+      // If filtering active locally (though local constant ones are all active)
+      if (active !== undefined) {
+        // Mock filter if active needed
+      }
 
       const startIndex = (page - 1) * limit;
       const paginated = filtered.slice(startIndex, startIndex + limit);
@@ -38,18 +43,18 @@ export const galleryService = {
     }
   },
 
-  // GET /gallery/:id
-  getGalleryItem: async (id: string): Promise<GalleryItem> => {
+  // GET /gallery/:idOrSlug
+  getGalleryItem: async (idOrSlug: string): Promise<GalleryItem> => {
     try {
-      const response = await apiClient.get(`${API_ENDPOINTS.GALLERY}/${id}`);
+      const response = await apiClient.get(`${API_ENDPOINTS.GALLERY}/${idOrSlug}`);
       const parsed = galleryItemSchema.safeParse(response.data);
       if (parsed.success) {
         return parsed.data;
       }
       throw new Error("Validation mismatch");
     } catch (error) {
-      console.warn(`Gallery item API failed for ID ${id}: returning local fallback.`);
-      const item = GALLERY_ITEMS.find((i) => i.id === id);
+      console.warn(`Gallery item API failed for ID/Slug ${idOrSlug}: returning local fallback.`);
+      const item = GALLERY_ITEMS.find((i) => i.id === idOrSlug || i.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") === idOrSlug);
       if (!item) {
         throw new Error("Gallery item not found in fallbacks");
       }

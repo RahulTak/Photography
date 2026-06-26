@@ -11,10 +11,17 @@ export const workshopRegistrationValidator = workshopBookingSchema;
 // Gallery metadata validation
 export const galleryMetadataValidator = z.object({
   title: z.string().min(2, { message: "Title must be at least 2 characters." }),
+  slug: z.string().optional(),
   category: galleryCategorySchema,
+  coverImage: z.string().optional(),
+  imageUrl: z.string().optional(),
+  description: z.string().optional().nullable(),
   location: z.string().min(2, { message: "Location is required." }),
   couple: z.string().min(2, { message: "Couple name/details are required." }),
   year: z.string().regex(/^\d{4}$/, { message: "Year must be a 4-digit number." }),
+  active: z.boolean().optional(),
+  featured: z.boolean().optional(),
+  images: z.array(z.string()).optional(),
 });
 
 // File validation helper

@@ -9,8 +9,12 @@ export const GET = withErrorHandler(async (req: Request) => {
   const category = searchParams.get("category") || undefined;
   const page = parseInt(searchParams.get("page") || "1", 10);
   const limit = parseInt(searchParams.get("limit") || "6", 10);
+  const activeStr = searchParams.get("active");
+  const active = activeStr !== null ? activeStr === "true" : undefined;
+  const featuredStr = searchParams.get("featured");
+  const featured = featuredStr !== null ? featuredStr === "true" : undefined;
 
-  const result = await galleryRepository.findMany({ category, page, limit });
+  const result = await galleryRepository.findMany({ category, page, limit, active, featured });
 
   return NextResponse.json({
     success: true,
@@ -28,11 +32,16 @@ export const POST = withErrorHandler(async (req: Request) => {
 
   const item = await galleryRepository.create({
     title: validated.title,
+    slug: validated.slug,
     category: validated.category,
-    imageUrl: body.imageUrl, // imageUrl should be uploaded first via upload route
+    coverImage: validated.coverImage || validated.imageUrl || body.imageUrl || "",
+    description: validated.description || undefined,
     location: validated.location,
     couple: validated.couple,
     year: validated.year,
+    active: validated.active,
+    featured: validated.featured,
+    images: validated.images,
   });
 
   return NextResponse.json({

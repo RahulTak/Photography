@@ -7,6 +7,7 @@ import { CONTACT_CONTENT } from "@/constants/contact";
 import { GALLERY_CATEGORIES } from "@/constants/gallery";
 import { ArrowRight } from "lucide-react";
 import { useAdminSettings } from "@/hooks/admin/useAdmin";
+import { SocialLinks } from "@/components/common/social-links";
 
 export function Footer() {
   const [mounted, setMounted] = useState(false);
@@ -56,7 +57,7 @@ export function Footer() {
             />
             <div className="flex flex-col">
               <span
-                className="font-serif text-lg font-bold tracking-widest text-white leading-none group-hover:text-luxury-accent transition-colors duration-300"
+                className="font-serif text-lg font-bold tracking-widest text-luxury-accent leading-none group-hover:text-luxury-accent/50 transition-colors duration-300"
                 style={{ letterSpacing: "0.12em" }}
               >
                 JP Click Studio
@@ -146,13 +147,11 @@ export function Footer() {
       {/* Bottom Copyright */}
       <div className="max-w-7xl mx-auto px-6 md:px-12 pt-8 border-t border-luxury-border/30 flex flex-col md:flex-row items-center justify-between gap-4 text-[10px] text-luxury-muted font-sans">
         <p>&copy; {new Date().getFullYear()} JP Click Studio. All rights reserved.</p>
-        <div className="flex space-x-6">
-          {socialsList.map((social) => (
-            <a key={social.name} href={social.url} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors duration-300">
-              {social.name}
-            </a>
-          ))}
-        </div>
+        <SocialLinks
+          instagramUrl={socialsList.find((s) => s.name === "Instagram")?.url}
+          youtubeUrl={socialsList.find((s) => s.name === "YouTube")?.url}
+          facebookUrl={socialsList.find((s) => s.name === "Facebook")?.url}
+        />
       </div>
     </footer>
   );

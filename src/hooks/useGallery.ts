@@ -3,8 +3,8 @@ import galleryService from "@/services/gallery/gallery.service";
 
 export function useGalleryInfinite(category?: string, limit = 6) {
   return useInfiniteQuery({
-    queryKey: ["gallery", category, limit],
-    queryFn: ({ pageParam = 1 }) => galleryService.getGallery(category, pageParam, limit),
+    queryKey: ["gallery", category, limit, true],
+    queryFn: ({ pageParam = 1 }) => galleryService.getGallery(category, pageParam, limit, true),
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages) => {
       return lastPage.hasMore ? allPages.length + 1 : undefined;

@@ -32,26 +32,62 @@ async function main() {
       create: { name: item.category },
     });
 
-    await prisma.gallery.upsert({
+    const slug = item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+    const gallery = await prisma.gallery.upsert({
       where: { id: item.id },
       update: {
         title: item.title,
+        slug,
         categoryId: category.id,
+        coverImage: item.imageUrl,
         imageUrl: item.imageUrl,
         location: item.location,
         couple: item.couple,
         year: item.year,
+        description: `A breathtaking ${item.category.toLowerCase()} photography shoot documenting the beautiful moments of ${item.couple} at ${item.location}. Captured with fine art aesthetics and cinematic storytelling.`,
+        active: true,
+        featured: item.id === "g1" || item.id === "g2" || item.id === "g3",
       },
       create: {
         id: item.id,
         title: item.title,
+        slug,
         categoryId: category.id,
+        coverImage: item.imageUrl,
         imageUrl: item.imageUrl,
         location: item.location,
         couple: item.couple,
         year: item.year,
+        description: `A breathtaking ${item.category.toLowerCase()} photography shoot documenting the beautiful moments of ${item.couple} at ${item.location}. Captured with fine art aesthetics and cinematic storytelling.`,
+        active: true,
+        featured: item.id === "g1" || item.id === "g2" || item.id === "g3",
       },
     });
+
+    // Create 4 additional gallery images for a beautiful masonry view
+    const additionalImages = [
+      item.imageUrl, // include the main one as first image
+      "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800",
+      "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?q=80&w=800",
+      "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=800",
+      "https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=800",
+    ].filter((val, index, self) => self.indexOf(val) === index); // unique only
+
+    // Delete existing images first for clean seed
+    await prisma.galleryImage.deleteMany({
+      where: { galleryId: gallery.id }
+    });
+
+    for (let i = 0; i < additionalImages.length; i++) {
+      await prisma.galleryImage.create({
+        data: {
+          galleryId: gallery.id,
+          imageUrl: additionalImages[i],
+          sortOrder: i,
+        }
+      });
+    }
   }
   console.log("Seeded gallery categories and items.");
 

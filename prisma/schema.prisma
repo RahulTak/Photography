@@ -19,20 +19,39 @@ model GalleryCategory {
 }
 
 model Gallery {
-  id         String          @id @default(uuid())
-  title      String
-  categoryId Int
-  category   GalleryCategory @relation(fields: [categoryId], references: [id])
-  imageUrl   String          @db.VarChar(512)
-  location   String
-  couple     String
-  year       String
-  createdAt  DateTime        @default(now())
-  updatedAt  DateTime        @updatedAt
-  deletedAt  DateTime?
+  id          String          @id @default(uuid())
+  title       String
+  slug        String          @unique
+  categoryId  Int
+  category    GalleryCategory @relation(fields: [categoryId], references: [id])
+  coverImage  String          @db.VarChar(512)
+  description String?         @db.Text
+  featured    Boolean         @default(false)
+  active      Boolean         @default(true)
+  imageUrl    String?         @db.VarChar(512)
+  location    String?
+  couple      String?
+  year        String?
+  images      GalleryImage[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  deletedAt   DateTime?
 
   @@index([categoryId])
   @@index([deletedAt])
+  @@index([slug])
+}
+
+model GalleryImage {
+  id        String   @id @default(uuid())
+  galleryId String
+  gallery   Gallery  @relation(fields: [galleryId], references: [id], onDelete: Cascade)
+  imageUrl  String   @db.VarChar(512)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([galleryId])
 }
 
 model Workshop {

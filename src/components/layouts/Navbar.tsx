@@ -10,6 +10,7 @@ import { useScroll } from "@/hooks/useScroll";
 import { useUIStore } from "@/store/useUIStore";
 import { theme } from "@/config/theme";
 import { useAdminSettings } from "@/hooks/admin/useAdmin";
+import { ThemeToggle } from "@/components/common/theme-toggle";
 
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -53,7 +54,7 @@ export function Navbar() {
             />
             <div className="flex flex-col">
               <span
-                className="font-serif text-lg font-bold tracking-widest text-white leading-none group-hover:text-luxury-accent transition-colors duration-300"
+                className="font-serif text-lg font-bold tracking-widest text-luxury-accent leading-none group-hover:text-luxury-accent/50 transition-colors duration-300"
                 style={{ letterSpacing: "0.12em" }}
               >
                 JP Click Studio
@@ -93,6 +94,7 @@ export function Navbar() {
 
           {/* Desktop Contact CTA Button & WhatsApp */}
           <div className="hidden md:flex items-center gap-4">
+            <ThemeToggle />
             <a
               href={whatsappUrl}
               target="_blank"
@@ -152,6 +154,7 @@ export function Navbar() {
               })}
               
               <div className="pt-8 flex flex-col space-y-4 items-center">
+                <ThemeToggle />
                 <a
                   href={whatsappUrl}
                   onClick={() => setMobileMenuOpen(false)}
