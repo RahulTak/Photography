@@ -99,7 +99,7 @@ export function Navbar() {
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-5 py-2.5 border border-[#25D366]/30 hover:border-[#25D366] bg-[#25D366]/5 hover:bg-[#25D366]/10 text-xs uppercase tracking-widest text-[#25D366] hover:text-[#25D366] transition-all duration-500 rounded-sm font-sans"
+              className="flex items-center gap-2 px-5 py-2.5 border border-[#128C4A]/60 hover:border-[#128C4A] bg-[#128C4A]/20 hover:bg-[#128C4A]/35 text-xs uppercase tracking-widest text-[#128C4A] hover:text-[#075E54] transition-all duration-500 rounded-sm font-sans"
               style={{ letterSpacing: "0.15em" }}
             >
               <WhatsAppIcon className="w-4 h-4 animate-bounce hover:animate-none" />

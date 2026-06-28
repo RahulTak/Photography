@@ -23,6 +23,13 @@ import {
   ArrowDown,
   Info
 } from "lucide-react";
+import { AdminInput } from "@/components/admin/ui/admin-input";
+import { AdminTextarea } from "@/components/admin/ui/admin-textarea";
+import { AdminSelect } from "@/components/admin/ui/admin-select";
+import { AdminCheckbox } from "@/components/admin/ui/admin-checkbox";
+import { AdminButton } from "@/components/admin/ui/admin-button";
+import { AdminModal } from "@/components/admin/ui/admin-modal";
+import { AdminCard } from "@/components/admin/ui/admin-card";
 
 interface GalleryFormInputs {
   title: string;
@@ -230,28 +237,28 @@ export default function AdminGalleryPage() {
         {/* Header Controls */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="space-y-1">
-            <span className="text-[10px] uppercase tracking-widest text-luxury-accent font-semibold">PORTFOLIO</span>
-            <h2 className="text-2xl md:text-3xl font-serif font-bold text-white">Gallery Shoot Management</h2>
+            <span className="text-[10px] uppercase tracking-widest text-accent font-semibold">PORTFOLIO</span>
+            <h2 className="text-2xl md:text-3xl font-serif font-bold text-foreground">Gallery Shoot Management</h2>
           </div>
-          <button
+          <AdminButton
             onClick={handleCreateClick}
-            className="px-5 py-2.5 bg-luxury-accent hover:bg-luxury-hover text-luxury-bg text-[10px] font-sans uppercase tracking-widest font-bold rounded-sm flex items-center gap-2 transition-all cursor-pointer shadow-lg shadow-luxury-accent/10"
+            className="flex items-center gap-2"
           >
             <Plus size={14} />
             Create Shoot Project
-          </button>
+          </AdminButton>
         </div>
 
         {/* Filter Controls */}
-        <div className="bg-[#151515] border border-white/5 p-4 rounded-sm flex items-center gap-4">
-          <SlidersHorizontal size={14} className="text-luxury-accent shrink-0" />
+        <div className="bg-card border border-border p-4 rounded-sm flex items-center gap-4">
+          <SlidersHorizontal size={14} className="text-accent shrink-0" />
           <div className="flex items-center gap-2 overflow-x-auto py-1">
             <button
               onClick={() => setSelectedCategory("All")}
               className={`px-3 py-1.5 rounded-sm text-[9px] font-sans uppercase tracking-wider font-semibold border transition-all cursor-pointer ${
                 selectedCategory === "All"
-                  ? "bg-luxury-accent/10 border-luxury-accent text-luxury-accent"
-                  : "border-white/5 text-luxury-muted hover:text-white"
+                  ? "bg-accent/10 border-accent text-accent"
+                  : "border-border text-muted hover:text-foreground"
               }`}
             >
               All Categories
@@ -262,8 +269,8 @@ export default function AdminGalleryPage() {
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-3 py-1.5 rounded-sm text-[9px] font-sans uppercase tracking-wider font-semibold border transition-all cursor-pointer ${
                   selectedCategory === cat
-                    ? "bg-luxury-accent/10 border-luxury-accent text-luxury-accent"
-                    : "border-white/5 text-luxury-muted hover:text-white"
+                    ? "bg-accent/10 border-accent text-accent"
+                    : "border-border text-muted hover:text-foreground"
                 }`}
               >
                 {cat}
@@ -275,19 +282,19 @@ export default function AdminGalleryPage() {
         {/* List Grid */}
         {isLoading ? (
           <div className="h-60 flex items-center justify-center">
-            <Loader2 className="animate-spin text-luxury-accent" size={24} />
+            <Loader2 className="animate-spin text-accent" size={24} />
           </div>
         ) : items.length === 0 ? (
-          <div className="bg-[#151515] border border-white/5 rounded-sm p-16 text-center">
-            <span className="text-xs text-luxury-muted uppercase tracking-widest">
+          <div className="bg-card border border-border rounded-sm p-16 text-center">
+            <span className="text-xs text-muted uppercase tracking-widest">
               No gallery items found for this category.
             </span>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {items.map((item: any) => (
-              <div key={item.id} className="bg-[#151515] border border-white/5 rounded-sm overflow-hidden flex flex-col justify-between group shadow-lg">
-                <div className="aspect-[4/3] relative overflow-hidden bg-neutral-900 border-b border-white/5">
+              <div key={item.id} className="bg-card border border-border rounded-sm overflow-hidden flex flex-col justify-between group shadow-lg">
+                <div className="aspect-[4/3] relative overflow-hidden bg-secondary/50 border-b border-border">
                   <img
                     src={item.coverImage || item.imageUrl}
                     alt={item.title}
@@ -297,35 +304,35 @@ export default function AdminGalleryPage() {
                   {/* Badges */}
                   <div className="absolute top-3 left-3 flex flex-col gap-1.5">
                     {item.featured && (
-                      <div className="bg-luxury-accent text-luxury-bg px-2.5 py-0.5 rounded-sm text-[8px] uppercase tracking-wider font-sans font-bold border border-luxury-accent shadow-md">
+                      <div className="bg-accent text-background px-2.5 py-0.5 rounded-sm text-[8px] uppercase tracking-wider font-sans font-bold border border-accent shadow-md">
                         Featured
                       </div>
                     )}
                     {!item.active && (
-                      <div className="bg-neutral-950 text-neutral-400 px-2.5 py-0.5 rounded-sm text-[8px] uppercase tracking-wider font-sans font-bold border border-white/5">
+                      <div className="bg-neutral-950/80 backdrop-blur-sm text-neutral-400 px-2.5 py-0.5 rounded-sm text-[8px] uppercase tracking-wider font-sans font-bold border border-border">
                         Inactive
                       </div>
                     )}
                   </div>
 
-                  <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm px-2.5 py-1 rounded-sm text-[8px] uppercase tracking-wider font-sans font-bold border border-white/10 text-luxury-accent">
+                  <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm px-2.5 py-1 rounded-sm text-[8px] uppercase tracking-wider font-sans font-bold border border-border text-accent">
                     {item.category}
                   </div>
                 </div>
 
                 <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                   <div className="space-y-1">
-                    <span className="text-[9px] uppercase tracking-widest font-mono text-luxury-muted">
+                    <span className="text-[9px] uppercase tracking-widest font-mono text-muted">
                       {item.couple} • {item.year}
                     </span>
-                    <h3 className="font-serif font-bold text-white text-base leading-snug">{item.title}</h3>
-                    <p className="text-[10px] text-luxury-muted font-sans font-light truncate">{item.location}</p>
+                    <h3 className="font-serif font-bold text-foreground text-base leading-snug">{item.title}</h3>
+                    <p className="text-[10px] text-muted font-sans font-light truncate">{item.location}</p>
                   </div>
 
-                  <div className="flex gap-2 pt-2 border-t border-white/5">
+                  <div className="flex gap-2 pt-2 border-t border-border">
                     <button
                       onClick={() => handleEditClick(item)}
-                      className="flex-1 py-2 bg-white/5 hover:bg-luxury-accent/15 border border-white/5 hover:border-luxury-accent/30 text-white hover:text-luxury-accent text-[9px] font-sans uppercase tracking-widest font-bold rounded-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                      className="flex-1 py-2 bg-secondary hover:bg-accent/10 border border-border text-foreground hover:text-accent text-[9px] font-sans uppercase tracking-widest font-bold rounded-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                     >
                       <Edit2 size={10} />
                       Edit Shoot
@@ -335,7 +342,7 @@ export default function AdminGalleryPage() {
                         setDeletingId(item.id);
                         setIsDeleteOpen(true);
                       }}
-                      className="flex-1 py-2 bg-white/5 hover:bg-red-500/10 border border-white/5 hover:border-red-500/30 text-white hover:text-red-400 text-[9px] font-sans uppercase tracking-widest font-bold rounded-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                      className="flex-1 py-2 bg-secondary hover:bg-red-500/10 border border-border text-foreground hover:text-red-500 text-[9px] font-sans uppercase tracking-widest font-bold rounded-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                     >
                       <Trash2 size={10} />
                       Delete
@@ -348,258 +355,231 @@ export default function AdminGalleryPage() {
         )}
 
         {/* Add/Edit Modal */}
-        {isFormOpen && (
-          <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-6">
-            <div className="bg-[#151515] border border-white/10 max-w-xl w-full p-8 rounded-sm shadow-2xl relative max-h-[90vh] overflow-y-auto">
-              <button
-                onClick={() => setIsFormOpen(false)}
-                className="absolute top-5 right-5 text-white/50 hover:text-white transition-colors cursor-pointer"
-              >
-                <X size={20} />
-              </button>
-
-              <h3 className="font-serif text-xl font-bold text-white mb-6">
-                {editingId ? "Edit Gallery Shoot Project" : "Create Gallery Shoot Project"}
-              </h3>
-
-              {isFetchingItem ? (
-                <div className="h-60 flex flex-col items-center justify-center gap-3">
-                  <Loader2 className="animate-spin text-luxury-accent" size={24} />
-                  <span className="text-[10px] text-luxury-muted font-sans uppercase tracking-widest">Loading Shoot Data...</span>
-                </div>
-              ) : (
-                <form onSubmit={handleFormSubmit} className="space-y-6">
-                  {/* Grid fields */}
-                  <div className="grid grid-cols-2 gap-4">
-                    {/* Title */}
-                    <div className="flex flex-col space-y-1.5 col-span-2">
-                      <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Shoot Title</label>
-                      <input
-                        type="text"
-                        required
-                        value={formValues.title}
-                        onChange={(e) => handleTitleChange(e.target.value)}
-                        className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors"
-                        placeholder="Ethereal Palace Mandap"
-                      />
-                    </div>
-
-                    {/* Slug */}
-                    <div className="flex flex-col space-y-1.5 col-span-2">
-                      <div className="flex justify-between items-center">
-                        <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">URL Slug</label>
-                        <span className="text-[8px] text-luxury-accent/80 font-sans uppercase">Dynamic Page: /gallery/[slug]</span>
-                      </div>
-                      <input
-                        type="text"
-                        required
-                        value={formValues.slug}
-                        onChange={(e) => setFormValues({ ...formValues, slug: e.target.value })}
-                        className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors font-mono"
-                        placeholder="ethereal-palace-mandap"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Cover Image Uploader */}
-                  <ImageUploader
-                    label="Cover Image (High Resolution Banner)"
-                    value={formValues.coverImage || formValues.imageUrl}
-                    onChange={(url) => setFormValues({ ...formValues, coverImage: url, imageUrl: url })}
-                  />
-
-                  {/* Description Textarea */}
-                  <div className="flex flex-col space-y-1.5">
-                    <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Shoot Story / Description</label>
-                    <textarea
-                      value={formValues.description}
-                      onChange={(e) => setFormValues({ ...formValues, description: e.target.value })}
-                      className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors min-h-[90px] resize-y"
-                      placeholder="An elegant description documenting the details, atmosphere, and aesthetic of the shoot..."
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    {/* Category Selection */}
-                    <div className="flex flex-col space-y-1.5">
-                      <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Category</label>
-                      <select
-                        value={formValues.category}
-                        onChange={(e) => setFormValues({ ...formValues, category: e.target.value })}
-                        className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors"
-                      >
-                        <option value="Wedding">Wedding</option>
-                        <option value="Pre-wedding">Pre-wedding</option>
-                        <option value="Cinematic">Cinematic</option>
-                        <option value="Traditional">Traditional</option>
-                        <option value="Destination">Destination</option>
-                      </select>
-                    </div>
-
-                    {/* Year */}
-                    <div className="flex flex-col space-y-1.5">
-                      <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Year</label>
-                      <input
-                        type="text"
-                        required
-                        value={formValues.year}
-                        onChange={(e) => setFormValues({ ...formValues, year: e.target.value })}
-                        className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors"
-                        placeholder="2026"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    {/* Couple Name */}
-                    <div className="flex flex-col space-y-1.5">
-                      <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Couple / Client</label>
-                      <input
-                        type="text"
-                        required
-                        value={formValues.couple}
-                        onChange={(e) => setFormValues({ ...formValues, couple: e.target.value })}
-                        className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors"
-                        placeholder="Aishwarya & Vikram"
-                      />
-                    </div>
-
-                    {/* Location */}
-                    <div className="flex flex-col space-y-1.5">
-                      <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Location</label>
-                      <input
-                        type="text"
-                        required
-                        value={formValues.location}
-                        onChange={(e) => setFormValues({ ...formValues, location: e.target.value })}
-                        className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors"
-                        placeholder="Umaid Bhawan, Jodhpur"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Status and Featured toggles */}
-                  <div className="grid grid-cols-2 gap-4 bg-luxury-bg/50 p-4 border border-white/5 rounded-sm">
-                    <label className="flex items-center gap-3 cursor-pointer select-none">
-                      <input
-                        type="checkbox"
-                        checked={formValues.featured}
-                        onChange={(e) => setFormValues({ ...formValues, featured: e.target.checked })}
-                        className="w-4 h-4 rounded border-white/10 bg-luxury-bg text-luxury-accent focus:ring-luxury-accent accent-luxury-accent cursor-pointer"
-                      />
-                      <div className="flex flex-col">
-                        <span className="text-xs font-sans font-bold text-white uppercase tracking-wider">Featured</span>
-                        <span className="text-[9px] text-luxury-muted font-sans">Highlight on landing page</span>
-                      </div>
-                    </label>
-
-                    <label className="flex items-center gap-3 cursor-pointer select-none">
-                      <input
-                        type="checkbox"
-                        checked={formValues.active}
-                        onChange={(e) => setFormValues({ ...formValues, active: e.target.checked })}
-                        className="w-4 h-4 rounded border-white/10 bg-luxury-bg text-luxury-accent focus:ring-luxury-accent accent-luxury-accent cursor-pointer"
-                      />
-                      <div className="flex flex-col">
-                        <span className="text-xs font-sans font-bold text-white uppercase tracking-wider">Active</span>
-                        <span className="text-[9px] text-luxury-muted font-sans">Visible in public gallery</span>
-                      </div>
-                    </label>
-                  </div>
-
-                  {/* Showcase Images list and reordering */}
-                  <div className="space-y-3 border-t border-white/5 pt-4">
-                    <div className="flex justify-between items-center">
-                      <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Showcase Gallery Images ({showcaseImages.length})</label>
-                      <span className="text-[8px] text-luxury-muted font-sans uppercase">Order determines masonry sequence</span>
-                    </div>
-
-                    {/* Single ImageUploader for appending to the showcase images */}
-                    <div className="bg-luxury-bg/30 p-4 border border-dashed border-white/5 rounded-sm">
-                      <ImageUploader
-                        label="Upload Showcase Image"
-                        value=""
-                        onChange={(url) => {
-                          if (url) {
-                            setShowcaseImages((prev) => [...prev, url]);
-                          }
-                        }}
-                      />
-                      <div className="flex items-center gap-1.5 mt-2 text-white/40 text-[9px] font-sans">
-                        <Info size={10} className="text-luxury-accent" />
-                        <span>Upload files to automatically append them to the shoot. Reorder using controls below.</span>
-                      </div>
-                    </div>
-
-                    {/* Showcase Image List */}
-                    {showcaseImages.length > 0 && (
-                      <div className="space-y-2 max-h-[220px] overflow-y-auto border border-white/5 rounded-sm p-3 bg-luxury-bg/25">
-                        {showcaseImages.map((imgUrl, idx) => (
-                          <div key={idx} className="flex items-center gap-3 bg-luxury-bg/80 p-2 border border-white/5 rounded-sm">
-                            <img src={imgUrl} className="w-12 h-12 object-cover rounded-sm border border-white/10" alt="Showcase Thumbnail" />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-[9px] text-luxury-muted truncate">{imgUrl}</p>
-                              <p className="text-[8px] text-luxury-accent font-bold uppercase tracking-wider">Image #{idx + 1}</p>
-                            </div>
-                            <div className="flex items-center gap-1 shrink-0">
-                              <button
-                                type="button"
-                                onClick={() => moveImageUp(idx)}
-                                disabled={idx === 0}
-                                className="p-1 hover:bg-white/5 rounded text-white/50 hover:text-white disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
-                                title="Move Up"
-                              >
-                                <ArrowUp size={12} />
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => moveImageDown(idx)}
-                                disabled={idx === showcaseImages.length - 1}
-                                className="p-1 hover:bg-white/5 rounded text-white/50 hover:text-white disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
-                                title="Move Down"
-                              >
-                                <ArrowDown size={12} />
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => removeImage(idx)}
-                                className="p-1.5 hover:bg-red-500/10 hover:text-red-400 text-white/50 rounded cursor-pointer transition-colors"
-                                title="Remove"
-                              >
-                                <Trash2 size={12} />
-                              </button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Form Submission buttons */}
-                  <div className="flex gap-3 pt-3 border-t border-white/5">
-                    <button
-                      type="button"
-                      onClick={() => setIsFormOpen(false)}
-                      className="flex-1 py-3 border border-white/10 hover:bg-white/5 text-white text-[10px] font-sans uppercase tracking-widest font-bold rounded-sm transition-colors cursor-pointer"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={createMutation.isPending || updateMutation.isPending}
-                      className="flex-1 py-3 bg-luxury-accent hover:bg-luxury-hover text-luxury-bg text-[10px] font-sans uppercase tracking-widest font-bold rounded-sm transition-all duration-300 cursor-pointer flex items-center justify-center gap-2"
-                    >
-                      {(createMutation.isPending || updateMutation.isPending) && (
-                        <Loader2 className="animate-spin" size={12} />
-                      )}
-                      {editingId ? "Save Changes" : "Create Shoot"}
-                    </button>
-                  </div>
-                </form>
-              )}
+        <AdminModal
+          isOpen={isFormOpen}
+          onClose={() => setIsFormOpen(false)}
+          title={editingId ? "Edit Gallery Shoot Project" : "Create Gallery Shoot Project"}
+        >
+          {isFetchingItem ? (
+            <div className="h-60 flex flex-col items-center justify-center gap-3">
+              <Loader2 className="animate-spin text-accent" size={24} />
+              <span className="text-[10px] text-muted font-sans uppercase tracking-widest">Loading Shoot Data...</span>
             </div>
-          </div>
-        )}
+          ) : (
+            <form onSubmit={handleFormSubmit} className="space-y-6">
+              {/* Grid fields */}
+              <div className="grid grid-cols-2 gap-4">
+                {/* Title */}
+                <div className="flex flex-col space-y-1.5 col-span-2">
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Shoot Title</label>
+                  <AdminInput
+                    type="text"
+                    required
+                    value={formValues.title}
+                    onChange={(e) => handleTitleChange(e.target.value)}
+                    placeholder="Ethereal Palace Mandap"
+                  />
+                </div>
+
+                {/* Slug */}
+                <div className="flex flex-col space-y-1.5 col-span-2">
+                  <div className="flex justify-between items-center">
+                    <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">URL Slug</label>
+                    <span className="text-[8px] text-accent/80 font-sans uppercase">Dynamic Page: /gallery/[slug]</span>
+                  </div>
+                  <AdminInput
+                    type="text"
+                    required
+                    value={formValues.slug}
+                    onChange={(e) => setFormValues({ ...formValues, slug: e.target.value })}
+                    className="font-mono"
+                    placeholder="ethereal-palace-mandap"
+                  />
+                </div>
+              </div>
+
+              {/* Cover Image Uploader */}
+              <ImageUploader
+                label="Cover Image (High Resolution Banner)"
+                value={formValues.coverImage || formValues.imageUrl}
+                onChange={(url) => setFormValues({ ...formValues, coverImage: url, imageUrl: url })}
+              />
+
+              {/* Description Textarea */}
+              <div className="flex flex-col space-y-1.5">
+                <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Shoot Story / Description</label>
+                <AdminTextarea
+                  value={formValues.description}
+                  onChange={(e) => setFormValues({ ...formValues, description: e.target.value })}
+                  className="min-h-[90px]"
+                  placeholder="An elegant description documenting the details, atmosphere, and aesthetic of the shoot..."
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                {/* Category Selection */}
+                <div className="flex flex-col space-y-1.5">
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Category</label>
+                  <AdminSelect
+                    value={formValues.category}
+                    onChange={(e) => setFormValues({ ...formValues, category: e.target.value })}
+                  >
+                    <option value="Wedding">Wedding</option>
+                    <option value="Pre-wedding">Pre-wedding</option>
+                    <option value="Cinematic">Cinematic</option>
+                    <option value="Traditional">Traditional</option>
+                    <option value="Destination">Destination</option>
+                  </AdminSelect>
+                </div>
+
+                {/* Year */}
+                <div className="flex flex-col space-y-1.5">
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Year</label>
+                  <AdminInput
+                    type="text"
+                    required
+                    value={formValues.year}
+                    onChange={(e) => setFormValues({ ...formValues, year: e.target.value })}
+                    placeholder="2026"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                {/* Couple Name */}
+                <div className="flex flex-col space-y-1.5">
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Couple / Client</label>
+                  <AdminInput
+                    type="text"
+                    required
+                    value={formValues.couple}
+                    onChange={(e) => setFormValues({ ...formValues, couple: e.target.value })}
+                    placeholder="Aishwarya & Vikram"
+                  />
+                </div>
+
+                {/* Location */}
+                <div className="flex flex-col space-y-1.5">
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Location</label>
+                  <AdminInput
+                    type="text"
+                    required
+                    value={formValues.location}
+                    onChange={(e) => setFormValues({ ...formValues, location: e.target.value })}
+                    placeholder="Umaid Bhawan, Jodhpur"
+                  />
+                </div>
+              </div>
+
+              {/* Status and Featured toggles */}
+              <div className="grid grid-cols-2 gap-4 bg-secondary/50 p-4 border border-border rounded-sm">
+                <AdminCheckbox
+                  checked={formValues.featured}
+                  onChange={(e) => setFormValues({ ...formValues, featured: e.target.checked })}
+                  label="Featured"
+                  description="Highlight on landing page"
+                />
+
+                <AdminCheckbox
+                  checked={formValues.active}
+                  onChange={(e) => setFormValues({ ...formValues, active: e.target.checked })}
+                  label="Active"
+                  description="Visible in public gallery"
+                />
+              </div>
+
+              {/* Showcase Images list and reordering */}
+              <div className="space-y-3 border-t border-border pt-4">
+                <div className="flex justify-between items-center">
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Showcase Gallery Images ({showcaseImages.length})</label>
+                  <span className="text-[8px] text-muted font-sans uppercase">Order determines masonry sequence</span>
+                </div>
+
+                {/* Single ImageUploader for appending to the showcase images */}
+                <div className="bg-secondary/35 p-4 border border-dashed border-border rounded-sm">
+                  <ImageUploader
+                    label="Upload Showcase Image"
+                    value=""
+                    onChange={(url) => {
+                      if (url) {
+                        setShowcaseImages((prev) => [...prev, url]);
+                      }
+                    }}
+                  />
+                  <div className="flex items-center gap-1.5 mt-2 text-muted/60 text-[9px] font-sans">
+                    <Info size={10} className="text-accent" />
+                    <span>Upload files to automatically append them to the shoot. Reorder using controls below.</span>
+                  </div>
+                </div>
+
+                {/* Showcase Image List */}
+                {showcaseImages.length > 0 && (
+                  <div className="space-y-2 max-h-[220px] overflow-y-auto border border-border rounded-sm p-3 bg-secondary/20">
+                    {showcaseImages.map((imgUrl, idx) => (
+                      <div key={idx} className="flex items-center gap-3 bg-card p-2 border border-border rounded-sm">
+                        <img src={imgUrl} className="w-12 h-12 object-cover rounded-sm border border-border" alt="Showcase Thumbnail" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[9px] text-muted truncate">{imgUrl}</p>
+                          <p className="text-[8px] text-accent font-bold uppercase tracking-wider">Image #{idx + 1}</p>
+                        </div>
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => moveImageUp(idx)}
+                            disabled={idx === 0}
+                            className="p-1 hover:bg-secondary rounded text-muted hover:text-foreground disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
+                            title="Move Up"
+                          >
+                            <ArrowUp size={12} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveImageDown(idx)}
+                            disabled={idx === showcaseImages.length - 1}
+                            className="p-1 hover:bg-secondary rounded text-muted hover:text-foreground disabled:opacity-20 cursor-pointer disabled:cursor-not-allowed"
+                            title="Move Down"
+                          >
+                            <ArrowDown size={12} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => removeImage(idx)}
+                            className="p-1.5 hover:bg-red-500/10 hover:text-red-400 text-muted rounded cursor-pointer transition-colors"
+                            title="Remove"
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Form Submission buttons */}
+              <div className="flex gap-3 pt-3 border-t border-border">
+                <AdminButton
+                  type="button"
+                  onClick={() => setIsFormOpen(false)}
+                  variant="secondary"
+                  className="flex-1"
+                >
+                  Cancel
+                </AdminButton>
+                <AdminButton
+                  type="submit"
+                  disabled={createMutation.isPending || updateMutation.isPending}
+                  className="flex-1"
+                >
+                  {(createMutation.isPending || updateMutation.isPending) && (
+                    <Loader2 className="animate-spin mr-1.5 inline" size={12} />
+                  )}
+                  {editingId ? "Save Changes" : "Create Shoot"}
+                </AdminButton>
+              </div>
+            </form>
+          )}
+        </AdminModal>
 
         {/* Delete Confirmation Modal */}
         <ConfirmModal

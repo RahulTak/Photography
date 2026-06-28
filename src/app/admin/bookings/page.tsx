@@ -6,6 +6,9 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { ConfirmModal } from "@/components/admin/ConfirmModal";
 import axios from "axios";
 import { SlidersHorizontal, Loader2, CalendarRange, Clock, CheckCircle, Ban, Hourglass } from "lucide-react";
+import { AdminSelect } from "@/components/admin/ui/admin-select";
+import { AdminTable, AdminThead, AdminTbody, AdminTr, AdminTh, AdminTd } from "@/components/admin/ui/admin-table";
+import { StatusBadge } from "@/components/admin/ui/status-badge";
 
 export default function AdminBookingsPage() {
   const queryClient = useQueryClient();
@@ -85,20 +88,20 @@ export default function AdminBookingsPage() {
     <AdminLayout>
       <div className="space-y-8">
         <div className="space-y-1">
-          <span className="text-[10px] uppercase tracking-widest text-luxury-accent font-semibold">RESERVATIONS</span>
-          <h2 className="text-2xl md:text-3xl font-serif font-bold text-white">Event Bookings Log</h2>
+          <span className="text-[10px] uppercase tracking-widest text-accent font-semibold">RESERVATIONS</span>
+          <h2 className="text-2xl md:text-3xl font-serif font-bold text-foreground">Event Bookings Log</h2>
         </div>
 
         {/* Filter Controls */}
-        <div className="bg-[#151515] border border-white/5 p-4 rounded-sm flex flex-col md:flex-row items-stretch md:items-center gap-4 justify-between">
+        <div className="bg-card border border-border p-4 rounded-sm flex flex-col md:flex-row items-stretch md:items-center gap-4 justify-between">
           <div className="flex items-center gap-2 overflow-x-auto py-1">
-            <SlidersHorizontal size={14} className="text-luxury-accent shrink-0 mr-2" />
+            <SlidersHorizontal size={14} className="text-accent shrink-0 mr-2" />
             <button
               onClick={() => setSelectedStatus("All")}
               className={`px-3 py-1.5 rounded-sm text-[9px] font-sans uppercase tracking-wider font-semibold border transition-all cursor-pointer ${
                 selectedStatus === "All"
-                  ? "bg-luxury-accent/10 border-luxury-accent text-luxury-accent"
-                  : "border-white/5 text-luxury-muted hover:text-white"
+                  ? "bg-accent/10 border-accent text-accent"
+                  : "border-border text-muted hover:text-foreground"
               }`}
             >
               All Status
@@ -109,8 +112,8 @@ export default function AdminBookingsPage() {
                 onClick={() => setSelectedStatus(status)}
                 className={`px-3 py-1.5 rounded-sm text-[9px] font-sans uppercase tracking-wider font-semibold border transition-all cursor-pointer ${
                   selectedStatus === status
-                    ? "bg-luxury-accent/10 border-luxury-accent text-luxury-accent"
-                    : "border-white/5 text-luxury-muted hover:text-white"
+                    ? "bg-accent/10 border-accent text-accent"
+                    : "border-border text-muted hover:text-foreground"
                 }`}
               >
                 {status}
@@ -119,13 +122,13 @@ export default function AdminBookingsPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium whitespace-nowrap">
+            <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium whitespace-nowrap">
               Event Type:
             </label>
-            <select
+            <AdminSelect
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
-              className="bg-luxury-bg border border-white/5 text-white px-3 py-1.5 rounded-sm text-[10px] font-sans outline-none cursor-pointer"
+              className="py-1.5 text-[10px] w-auto"
             >
               <option value="All">All Types</option>
               {eventTypes.map((type) => (
@@ -133,78 +136,71 @@ export default function AdminBookingsPage() {
                   {type}
                 </option>
               ))}
-            </select>
+            </AdminSelect>
           </div>
         </div>
 
         {/* Bookings Table */}
         {isLoading ? (
           <div className="h-60 flex items-center justify-center">
-            <Loader2 className="animate-spin text-luxury-accent" size={24} />
+            <Loader2 className="animate-spin text-accent" size={24} />
           </div>
         ) : filteredBookings.length === 0 ? (
-          <div className="bg-[#151515] border border-white/5 rounded-sm p-16 text-center">
-            <span className="text-xs text-luxury-muted uppercase tracking-widest">
+          <div className="bg-card border border-border rounded-sm p-16 text-center">
+            <span className="text-xs text-muted uppercase tracking-widest">
               No event bookings match these filter options.
             </span>
           </div>
         ) : (
-          <div className="bg-[#151515] border border-white/5 rounded-sm overflow-hidden shadow-lg">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs font-sans text-luxury-muted">
-                <thead>
-                  <tr className="border-b border-white/5 bg-[#0F0F0F] text-[9px] uppercase tracking-wider text-white/50">
-                    <th className="p-4">Customer Details</th>
-                    <th className="p-4">Event Date</th>
-                    <th className="p-4">Event Type</th>
-                    <th className="p-4">Client Message</th>
-                    <th className="p-4">Status</th>
-                    <th className="p-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5">
-                  {filteredBookings.map((b: any) => (
-                    <tr key={b.id} className="hover:bg-white/[0.01] hover:text-white transition-colors">
-                      <td className="p-4 space-y-0.5">
-                        <span className="font-bold text-white block text-sm">{b.name}</span>
-                        <span className="text-[10px] text-neutral-400 block">{b.email}</span>
-                        <span className="text-[10px] text-neutral-400 block">{b.phone}</span>
-                      </td>
-                      <td className="p-4 font-mono text-[10px] font-semibold text-white/90">
-                        {b.eventDate}
-                      </td>
-                      <td className="p-4">
-                        <span className="px-2.5 py-0.5 rounded-sm text-[9px] font-bold uppercase tracking-wider bg-white/5 border border-white/5 text-white/85">
-                          {b.eventType}
-                        </span>
-                      </td>
-                      <td className="p-4 font-light max-w-xs truncate" title={b.message}>
-                        {b.message}
-                      </td>
-                      <td className="p-4">
-                        <div className={`px-2.5 py-1 rounded-sm text-[9px] font-bold uppercase tracking-wider flex items-center gap-1.5 w-fit ${getStatusBadge(b.status)}`}>
-                          {getStatusIcon(b.status)}
-                          {b.status || "pending"}
-                        </div>
-                      </td>
-                      <td className="p-4 text-right">
-                        <select
-                          value={b.status || "pending"}
-                          onChange={(e) => handleStatusChange(b.id, e.target.value)}
-                          className="bg-luxury-bg border border-white/10 hover:border-luxury-accent text-white px-2 py-1 rounded-sm text-[10px] font-sans outline-none cursor-pointer transition-colors"
-                        >
-                          <option value="pending">Set Pending</option>
-                          <option value="confirmed">Set Confirmed</option>
-                          <option value="completed">Set Completed</option>
-                          <option value="cancelled">Set Cancelled</option>
-                        </select>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <AdminTable>
+            <AdminThead>
+              <AdminTr isHeader={true}>
+                <AdminTh>Customer Details</AdminTh>
+                <AdminTh>Event Date</AdminTh>
+                <AdminTh>Event Type</AdminTh>
+                <AdminTh>Client Message</AdminTh>
+                <AdminTh>Status</AdminTh>
+                <AdminTh className="text-right">Actions</AdminTh>
+              </AdminTr>
+            </AdminThead>
+            <AdminTbody>
+              {filteredBookings.map((b: any) => (
+                <AdminTr key={b.id}>
+                  <AdminTd className="space-y-0.5">
+                    <span className="font-bold text-foreground block text-sm">{b.name}</span>
+                    <span className="text-[10px] text-muted block">{b.email}</span>
+                    <span className="text-[10px] text-muted block">{b.phone}</span>
+                  </AdminTd>
+                  <AdminTd className="font-mono text-[10px] font-semibold text-foreground/90">
+                    {b.eventDate}
+                  </AdminTd>
+                  <AdminTd>
+                    <span className="px-2.5 py-0.5 rounded-sm text-[9px] font-bold uppercase tracking-wider bg-secondary border border-border text-foreground/80">
+                      {b.eventType}
+                    </span>
+                  </AdminTd>
+                  <AdminTd className="font-light max-w-xs truncate" title={b.message}>
+                    {b.message}
+                  </AdminTd>
+                  <AdminTd>
+                    <StatusBadge status={b.status || "pending"} />
+                  </AdminTd>
+                  <AdminTd className="text-right">
+                    <AdminSelect
+                      value={b.status || "pending"}
+                      onChange={(e) => handleStatusChange(b.id, e.target.value)}
+                      className="py-1 px-2 text-[10px] w-auto inline-block"
+                    >
+                      <option value="pending">Set Pending</option>
+                      <option value="confirmed">Set Confirmed</option>
+                      <option value="completed">Set Completed</option>
+                      <option value="cancelled">Set Cancelled</option>
+                    </AdminSelect>
+                  </AdminTd>
+                </AdminTr>
+              ))}
+            </AdminTbody>
+          </AdminTable>
         )}
       </div>
     </AdminLayout>

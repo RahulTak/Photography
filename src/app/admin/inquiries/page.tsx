@@ -5,6 +5,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import axios from "axios";
 import { SlidersHorizontal, Loader2, Check, MailOpen, Mail, Trash2 } from "lucide-react";
+import { AdminTable, AdminThead, AdminTbody, AdminTr, AdminTh, AdminTd } from "@/components/admin/ui/admin-table";
+import { StatusBadge } from "@/components/admin/ui/status-badge";
 
 export default function AdminInquiriesPage() {
   const queryClient = useQueryClient();
@@ -48,19 +50,19 @@ export default function AdminInquiriesPage() {
     <AdminLayout>
       <div className="space-y-8">
         <div className="space-y-1">
-          <span className="text-[10px] uppercase tracking-widest text-luxury-accent font-semibold">MESSAGES</span>
-          <h2 className="text-2xl md:text-3xl font-serif font-bold text-white">General Inquiries</h2>
+          <span className="text-[10px] uppercase tracking-widest text-accent font-semibold">MESSAGES</span>
+          <h2 className="text-2xl md:text-3xl font-serif font-bold text-foreground">General Inquiries</h2>
         </div>
 
         {/* Filter Controls */}
-        <div className="bg-[#151515] border border-white/5 p-4 rounded-sm flex items-center gap-4">
-          <SlidersHorizontal size={14} className="text-luxury-accent shrink-0 mr-2" />
+        <div className="bg-card border border-border p-4 rounded-sm flex items-center gap-4">
+          <SlidersHorizontal size={14} className="text-accent shrink-0 mr-2" />
           <button
             onClick={() => setSelectedStatus("All")}
             className={`px-3 py-1.5 rounded-sm text-[9px] font-sans uppercase tracking-wider font-semibold border transition-all cursor-pointer ${
               selectedStatus === "All"
-                ? "bg-luxury-accent/10 border-luxury-accent text-luxury-accent"
-                : "border-white/5 text-luxury-muted hover:text-white"
+                ? "bg-accent/10 border-accent text-accent"
+                : "border-border text-muted hover:text-foreground"
             }`}
           >
             All Messages
@@ -69,8 +71,8 @@ export default function AdminInquiriesPage() {
             onClick={() => setSelectedStatus("Unread")}
             className={`px-3 py-1.5 rounded-sm text-[9px] font-sans uppercase tracking-wider font-semibold border transition-all cursor-pointer ${
               selectedStatus === "Unread"
-                ? "bg-luxury-accent/10 border-luxury-accent text-luxury-accent"
-                : "border-white/5 text-luxury-muted hover:text-white"
+                ? "bg-accent/10 border-accent text-accent"
+                : "border-border text-muted hover:text-foreground"
             }`}
           >
             Unread
@@ -79,8 +81,8 @@ export default function AdminInquiriesPage() {
             onClick={() => setSelectedStatus("Read")}
             className={`px-3 py-1.5 rounded-sm text-[9px] font-sans uppercase tracking-wider font-semibold border transition-all cursor-pointer ${
               selectedStatus === "Read"
-                ? "bg-luxury-accent/10 border-luxury-accent text-luxury-accent"
-                : "border-white/5 text-luxury-muted hover:text-white"
+                ? "bg-accent/10 border-accent text-accent"
+                : "border-border text-muted hover:text-foreground"
             }`}
           >
             Read
@@ -90,77 +92,71 @@ export default function AdminInquiriesPage() {
         {/* Inquiries List */}
         {isLoading ? (
           <div className="h-60 flex items-center justify-center">
-            <Loader2 className="animate-spin text-luxury-accent" size={24} />
+            <Loader2 className="animate-spin text-accent" size={24} />
           </div>
         ) : filteredInquiries.length === 0 ? (
-          <div className="bg-[#151515] border border-white/5 rounded-sm p-16 text-center">
-            <span className="text-xs text-luxury-muted uppercase tracking-widest">
+          <div className="bg-card border border-border rounded-sm p-16 text-center">
+            <span className="text-xs text-muted uppercase tracking-widest">
               No inquiries found matching this message status.
             </span>
           </div>
         ) : (
-          <div className="bg-[#151515] border border-white/5 rounded-sm overflow-hidden shadow-lg">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs font-sans text-luxury-muted">
-                <thead>
-                  <tr className="border-b border-white/5 bg-[#0F0F0F] text-[9px] uppercase tracking-wider text-white/50">
-                    <th className="p-4">Client Contact</th>
-                    <th className="p-4">Service Type</th>
-                    <th className="p-4">Event Date</th>
-                    <th className="p-4">Message Body</th>
-                    <th className="p-4">Submitted</th>
-                    <th className="p-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5">
-                  {filteredInquiries.map((inq: any) => {
-                    const isUnread = inq.status === "unread";
-                    return (
-                      <tr
-                        key={inq.id}
-                        className={`hover:bg-white/[0.01] transition-colors ${
-                          isUnread ? "text-white font-medium" : "text-luxury-muted"
+          <AdminTable>
+            <AdminThead>
+              <AdminTr isHeader={true}>
+                <AdminTh>Client Contact</AdminTh>
+                <AdminTh>Service Type</AdminTh>
+                <AdminTh>Event Date</AdminTh>
+                <AdminTh>Message Body</AdminTh>
+                <AdminTh>Submitted</AdminTh>
+                <AdminTh className="text-right">Actions</AdminTh>
+              </AdminTr>
+            </AdminThead>
+            <AdminTbody>
+              {filteredInquiries.map((inq: any) => {
+                const isUnread = inq.status === "unread";
+                return (
+                  <AdminTr
+                    key={inq.id}
+                    className={isUnread ? "text-foreground font-medium" : "text-muted"}
+                  >
+                    <AdminTd className="space-y-0.5">
+                      <span className={`block ${isUnread ? "text-foreground font-bold" : "text-foreground/80"}`}>
+                        {inq.name}
+                      </span>
+                      <span className="text-[10px] text-muted block">{inq.email}</span>
+                      <span className="text-[10px] text-muted block">{inq.phone}</span>
+                    </AdminTd>
+                    <AdminTd>
+                      <span className="px-2.5 py-0.5 rounded-sm text-[9px] font-bold uppercase tracking-wider bg-secondary border border-border text-foreground/80">
+                        {inq.serviceType}
+                      </span>
+                    </AdminTd>
+                    <AdminTd className="font-mono text-[10px]">{inq.date || "Not set"}</AdminTd>
+                    <AdminTd className="font-light max-w-sm truncate" title={inq.message}>
+                      {inq.message}
+                    </AdminTd>
+                    <AdminTd className="font-mono text-[10px]">
+                      {new Date(inq.createdAt).toLocaleString()}
+                    </AdminTd>
+                    <AdminTd className="text-right">
+                      <button
+                        onClick={() => toggleReadStatus(inq.id, inq.status)}
+                        className={`p-2 rounded-sm border transition-all cursor-pointer inline-flex items-center justify-center ${
+                          isUnread
+                            ? "bg-accent/15 border-accent/30 text-accent hover:bg-accent/25"
+                            : "bg-secondary border-border text-muted hover:text-foreground hover:bg-secondary/85"
                         }`}
+                        title={isUnread ? "Mark as Read" : "Mark as Unread"}
                       >
-                        <td className="p-4 space-y-0.5">
-                          <span className={`block ${isUnread ? "text-white font-bold" : "text-neutral-300"}`}>
-                            {inq.name}
-                          </span>
-                          <span className="text-[10px] text-neutral-400 block">{inq.email}</span>
-                          <span className="text-[10px] text-neutral-400 block">{inq.phone}</span>
-                        </td>
-                        <td className="p-4">
-                          <span className="px-2.5 py-0.5 rounded-sm text-[9px] font-bold uppercase tracking-wider bg-white/5 border border-white/5 text-white/80">
-                            {inq.serviceType}
-                          </span>
-                        </td>
-                        <td className="p-4 font-mono text-[10px]">{inq.date || "Not set"}</td>
-                        <td className="p-4 font-light max-w-sm truncate" title={inq.message}>
-                          {inq.message}
-                        </td>
-                        <td className="p-4 font-mono text-[10px]">
-                          {new Date(inq.createdAt).toLocaleString()}
-                        </td>
-                        <td className="p-4 text-right">
-                          <button
-                            onClick={() => toggleReadStatus(inq.id, inq.status)}
-                            className={`p-2 rounded-sm border transition-all cursor-pointer inline-flex items-center justify-center ${
-                              isUnread
-                                ? "bg-luxury-accent/15 border-luxury-accent/30 text-luxury-accent hover:bg-luxury-accent/25"
-                                : "bg-neutral-800 border-white/5 text-neutral-400 hover:text-white"
-                            }`}
-                            title={isUnread ? "Mark as Read" : "Mark as Unread"}
-                          >
-                            {isUnread ? <Mail size={14} /> : <MailOpen size={14} />}
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
+                        {isUnread ? <Mail size={14} /> : <MailOpen size={14} />}
+                      </button>
+                    </AdminTd>
+                  </AdminTr>
+                );
+              })}
+            </AdminTbody>
+          </AdminTable>
         )}
       </div>
     </AdminLayout>

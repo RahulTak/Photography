@@ -8,6 +8,10 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { ImageUploader } from "@/components/admin/ImageUploader";
 import { useHomeContent, useUpdateHomeContent } from "@/hooks/useHomeContent";
 import { Loader2, Save, CheckCircle } from "lucide-react";
+import { AdminInput } from "@/components/admin/ui/admin-input";
+import { AdminTextarea } from "@/components/admin/ui/admin-textarea";
+import { AdminButton } from "@/components/admin/ui/admin-button";
+import { AdminCard } from "@/components/admin/ui/admin-card";
 
 // Homepage validation schema
 const homeContentSchema = z.object({
@@ -100,13 +104,13 @@ export default function AdminHomePage() {
     <AdminLayout>
       <div className="space-y-8">
         <div className="space-y-1">
-          <span className="text-[10px] uppercase tracking-widest text-luxury-accent font-semibold">HOMEPAGE</span>
-          <h2 className="text-2xl md:text-3xl font-serif font-bold text-white">Homepage Content Manager</h2>
+          <span className="text-[10px] uppercase tracking-widest text-accent font-semibold">HOMEPAGE</span>
+          <h2 className="text-2xl md:text-3xl font-serif font-bold text-foreground">Homepage Content Manager</h2>
         </div>
 
         {isLoading ? (
           <div className="h-60 flex items-center justify-center">
-            <Loader2 className="animate-spin text-luxury-accent" size={24} />
+            <Loader2 className="animate-spin text-accent" size={24} />
           </div>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 max-w-3xl">
@@ -125,9 +129,7 @@ export default function AdminHomePage() {
             )}
 
             {/* Hero Section copy */}
-            <div className="bg-[#151515] border border-white/5 p-6 rounded-sm space-y-6 shadow-lg">
-              <h3 className="font-serif text-lg font-bold text-white border-b border-white/5 pb-3">Hero Section</h3>
-              
+            <AdminCard title="Hero Section">
               <ImageUploader
                 label="Hero Background Media Asset"
                 value={heroImage}
@@ -137,22 +139,20 @@ export default function AdminHomePage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* Hero Title */}
                 <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Hero Headline</label>
-                  <input
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Hero Headline</label>
+                  <AdminInput
                     type="text"
                     {...register("hero.title")}
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors"
                   />
                   {errors.hero?.title && <p className="text-[10px] text-red-500 font-sans mt-1">{errors.hero.title.message}</p>}
                 </div>
 
                 {/* Hero Subtitle */}
                 <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Hero Subtitle</label>
-                  <input
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Hero Subtitle</label>
+                  <AdminInput
                     type="text"
                     {...register("hero.subtitle")}
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors"
                   />
                   {errors.hero?.subtitle && <p className="text-[10px] text-red-500 font-sans mt-1">{errors.hero.subtitle.message}</p>}
                 </div>
@@ -160,11 +160,10 @@ export default function AdminHomePage() {
 
               {/* Hero Slogan */}
               <div className="flex flex-col space-y-1.5">
-                <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Hero Description</label>
-                <textarea
+                <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Hero Description</label>
+                <AdminTextarea
                   rows={3}
                   {...register("hero.description")}
-                  className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none resize-none transition-colors"
                 />
                 {errors.hero?.description && <p className="text-[10px] text-red-500 font-sans mt-1">{errors.hero.description.message}</p>}
               </div>
@@ -172,32 +171,28 @@ export default function AdminHomePage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* Hero CTA Primary */}
                 <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Primary CTA Label</label>
-                  <input
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Primary CTA Label</label>
+                  <AdminInput
                     type="text"
                     {...register("hero.ctaPrimary")}
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors"
                   />
                   {errors.hero?.ctaPrimary && <p className="text-[10px] text-red-500 font-sans mt-1">{errors.hero.ctaPrimary.message}</p>}
                 </div>
 
                 {/* Hero CTA Secondary */}
                 <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Secondary CTA Label</label>
-                  <input
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Secondary CTA Label</label>
+                  <AdminInput
                     type="text"
                     {...register("hero.ctaSecondary")}
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors"
                   />
                   {errors.hero?.ctaSecondary && <p className="text-[10px] text-red-500 font-sans mt-1">{errors.hero.ctaSecondary.message}</p>}
                 </div>
               </div>
-            </div>
+            </AdminCard>
 
             {/* About Preview Section copy */}
-            <div className="bg-[#151515] border border-white/5 p-6 rounded-sm space-y-6 shadow-lg">
-              <h3 className="font-serif text-lg font-bold text-white border-b border-white/5 pb-3">About Story Preview</h3>
-
+            <AdminCard title="About Story Preview">
               <ImageUploader
                 label="About Preview Side Image Portrait"
                 value={aboutPortrait}
@@ -207,22 +202,20 @@ export default function AdminHomePage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* About Tag */}
                 <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">About Tagline</label>
-                  <input
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">About Tagline</label>
+                  <AdminInput
                     type="text"
                     {...register("aboutPreview.tag")}
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors"
                   />
                   {errors.aboutPreview?.tag && <p className="text-[10px] text-red-500 font-sans mt-1">{errors.aboutPreview.tag.message}</p>}
                 </div>
 
                 {/* About Link text */}
                 <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Link Button Label</label>
-                  <input
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Link Button Label</label>
+                  <AdminInput
                     type="text"
                     {...register("aboutPreview.ctaText")}
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors"
                   />
                   {errors.aboutPreview?.ctaText && <p className="text-[10px] text-red-500 font-sans mt-1">{errors.aboutPreview.ctaText.message}</p>}
                 </div>
@@ -230,22 +223,20 @@ export default function AdminHomePage() {
 
               {/* About Title */}
               <div className="flex flex-col space-y-1.5">
-                <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">About Heading</label>
-                <input
+                <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">About Heading</label>
+                <AdminInput
                   type="text"
                   {...register("aboutPreview.title")}
-                  className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors"
                 />
                 {errors.aboutPreview?.title && <p className="text-[10px] text-red-500 font-sans mt-1">{errors.aboutPreview.title.message}</p>}
               </div>
 
               {/* About Description */}
               <div className="flex flex-col space-y-1.5">
-                <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Story Description</label>
-                <textarea
+                <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Story Description</label>
+                <AdminTextarea
                   rows={4}
                   {...register("aboutPreview.description")}
-                  className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none resize-none transition-colors"
                 />
                 {errors.aboutPreview?.description && <p className="text-[10px] text-red-500 font-sans mt-1">{errors.aboutPreview.description.message}</p>}
               </div>
@@ -253,63 +244,56 @@ export default function AdminHomePage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* Founder Name */}
                 <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Founder Representative</label>
-                  <input
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Founder Representative</label>
+                  <AdminInput
                     type="text"
                     {...register("aboutPreview.founders")}
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors"
                   />
                   {errors.aboutPreview?.founders && <p className="text-[10px] text-red-500 font-sans mt-1">{errors.aboutPreview.founders.message}</p>}
                 </div>
 
                 {/* Founder Title */}
                 <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Founder Role</label>
-                  <input
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Founder Role</label>
+                  <AdminInput
                     type="text"
                     {...register("aboutPreview.foundersTitle")}
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors"
                   />
                   {errors.aboutPreview?.foundersTitle && <p className="text-[10px] text-red-500 font-sans mt-1">{errors.aboutPreview.foundersTitle.message}</p>}
                 </div>
               </div>
-            </div>
+            </AdminCard>
 
             {/* Why Choose Us copy */}
-            <div className="bg-[#151515] border border-white/5 p-6 rounded-sm space-y-6 shadow-lg">
-              <h3 className="font-serif text-lg font-bold text-white border-b border-white/5 pb-3">Why Choose Us</h3>
-
+            <AdminCard title="Why Choose Us">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* Why Choose Tag */}
                 <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Section Tagline</label>
-                  <input
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Section Tagline</label>
+                  <AdminInput
                     type="text"
                     {...register("whyChooseUs.tag")}
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors"
                   />
                   {errors.whyChooseUs?.tag && <p className="text-[10px] text-red-500 font-sans mt-1">{errors.whyChooseUs.tag.message}</p>}
                 </div>
 
                 {/* Why Choose Title */}
                 <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Section Heading</label>
-                  <input
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Section Heading</label>
+                  <AdminInput
                     type="text"
                     {...register("whyChooseUs.title")}
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors"
                   />
                   {errors.whyChooseUs?.title && <p className="text-[10px] text-red-500 font-sans mt-1">{errors.whyChooseUs.title.message}</p>}
                 </div>
               </div>
-            </div>
+            </AdminCard>
 
             {/* Submit Action */}
             <div className="flex justify-end">
-              <button
+              <AdminButton
                 type="submit"
                 disabled={updateMutation.isPending || !isDirty}
-                className="px-8 py-3.5 bg-luxury-accent hover:bg-luxury-hover disabled:bg-neutral-800 disabled:text-neutral-500 text-luxury-bg text-xs font-sans uppercase tracking-widest font-bold rounded-sm transition-all duration-300 flex items-center gap-2 cursor-pointer shadow-lg"
               >
                 {updateMutation.isPending ? (
                   <>
@@ -322,7 +306,7 @@ export default function AdminHomePage() {
                     Save Homepage Copy
                   </>
                 )}
-              </button>
+              </AdminButton>
             </div>
           </form>
         )}

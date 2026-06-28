@@ -10,6 +10,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import axios from "axios";
 import { Plus, Edit2, Trash2, Loader2, X, Quote, CheckCircle } from "lucide-react";
+import { AdminInput } from "@/components/admin/ui/admin-input";
+import { AdminTextarea } from "@/components/admin/ui/admin-textarea";
+import { AdminButton } from "@/components/admin/ui/admin-button";
+import { AdminModal } from "@/components/admin/ui/admin-modal";
+import { AdminCard } from "@/components/admin/ui/admin-card";
 
 // Testimonial validation schema
 const testimonialSchema = z.object({
@@ -141,37 +146,37 @@ export default function AdminTestimonialsPage() {
         {/* Header Controls */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="space-y-1">
-            <span className="text-[10px] uppercase tracking-widest text-luxury-accent font-semibold">REVIEWS</span>
-            <h2 className="text-2xl md:text-3xl font-serif font-bold text-white">Client Testimonials</h2>
+            <span className="text-[10px] uppercase tracking-widest text-accent font-semibold">REVIEWS</span>
+            <h2 className="text-2xl md:text-3xl font-serif font-bold text-foreground">Client Testimonials</h2>
           </div>
-          <button
+          <AdminButton
             onClick={handleCreateClick}
-            className="px-5 py-2.5 bg-luxury-accent hover:bg-luxury-hover text-luxury-bg text-[10px] font-sans uppercase tracking-widest font-bold rounded-sm flex items-center gap-2 transition-all cursor-pointer shadow-lg"
+            className="flex items-center gap-2"
           >
             <Plus size={14} />
             Add Review
-          </button>
+          </AdminButton>
         </div>
 
         {/* List Table */}
         {isLoading ? (
           <div className="h-60 flex items-center justify-center">
-            <Loader2 className="animate-spin text-luxury-accent" size={24} />
+            <Loader2 className="animate-spin text-accent" size={24} />
           </div>
         ) : testimonials.length === 0 ? (
-          <div className="bg-[#151515] border border-white/5 rounded-sm p-16 text-center">
-            <span className="text-xs text-luxury-muted uppercase tracking-widest">
+          <div className="bg-card border border-border rounded-sm p-16 text-center">
+            <span className="text-xs text-muted uppercase tracking-widest">
               No client reviews created yet.
             </span>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {testimonials.map((t: any) => (
-              <div key={t.id} className="bg-[#151515] border border-white/5 p-6 rounded-sm flex flex-col justify-between space-y-6 relative group shadow-lg">
-                <Quote className="absolute top-6 right-6 text-white/5 group-hover:text-luxury-accent/5 transition-colors" size={40} />
+              <div key={t.id} className="bg-card border border-border p-6 rounded-sm flex flex-col justify-between space-y-6 relative group shadow-lg">
+                <Quote className="absolute top-6 right-6 text-foreground/5 group-hover:text-accent/5 transition-colors" size={40} />
 
                 <div className="space-y-4">
-                  <p className="text-xs italic font-serif leading-relaxed text-neutral-300">
+                  <p className="text-xs italic font-serif leading-relaxed text-foreground/90">
                     "{t.quote}"
                   </p>
 
@@ -179,19 +184,19 @@ export default function AdminTestimonialsPage() {
                     <img
                       src={t.avatar}
                       alt={t.author}
-                      className="w-10 h-10 rounded-full object-cover border border-white/10"
+                      className="w-10 h-10 rounded-full object-cover border border-border"
                     />
                     <div>
-                      <span className="text-xs font-bold text-white block">{t.author}</span>
-                      <span className="text-[10px] text-luxury-muted font-sans font-light block">{t.role}</span>
+                      <span className="text-xs font-bold text-foreground block">{t.author}</span>
+                      <span className="text-[10px] text-muted font-sans font-light block">{t.role}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex gap-2 pt-4 border-t border-white/5">
+                <div className="flex gap-2 pt-4 border-t border-border">
                   <button
                     onClick={() => handleEditClick(t)}
-                    className="flex-1 py-2 bg-white/5 hover:bg-luxury-accent/15 border border-white/5 hover:border-luxury-accent/30 text-white hover:text-luxury-accent text-[9px] font-sans uppercase tracking-widest font-bold rounded-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                    className="flex-1 py-2 bg-secondary hover:bg-accent/15 border border-border text-foreground hover:text-accent text-[9px] font-sans uppercase tracking-widest font-bold rounded-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                   >
                     <Edit2 size={10} />
                     Edit
@@ -201,7 +206,7 @@ export default function AdminTestimonialsPage() {
                       setDeletingId(t.id);
                       setIsDeleteOpen(true);
                     }}
-                    className="flex-1 py-2 bg-white/5 hover:bg-red-500/10 border border-white/5 hover:border-red-500/30 text-white hover:text-red-400 text-[9px] font-sans uppercase tracking-widest font-bold rounded-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                    className="flex-1 py-2 bg-secondary hover:bg-red-500/10 border border-border text-muted hover:text-red-500 text-[9px] font-sans uppercase tracking-widest font-bold rounded-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                   >
                     <Trash2 size={10} />
                     Delete
@@ -213,87 +218,75 @@ export default function AdminTestimonialsPage() {
         )}
 
         {/* Create/Edit Modal */}
-        {isFormOpen && (
-          <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-6">
-            <div className="bg-[#151515] border border-white/10 max-w-md w-full p-8 rounded-sm shadow-2xl relative max-h-[85vh] overflow-y-auto">
-              <button
-                onClick={() => setIsFormOpen(false)}
-                className="absolute top-5 right-5 text-white/50 hover:text-white transition-colors cursor-pointer"
-              >
-                <X size={20} />
-              </button>
+        <AdminModal
+          isOpen={isFormOpen}
+          onClose={() => setIsFormOpen(false)}
+          title={editingId ? "Edit Review" : "Add Review"}
+          maxWidthClass="max-w-md"
+        >
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            {/* Client Avatar */}
+            <ImageUploader
+              label="Client Profile Avatar"
+              value={watchAvatar}
+              onChange={(url) => setValue("avatar", url, { shouldDirty: true })}
+            />
 
-              <h3 className="font-serif text-xl font-bold text-white mb-6">
-                {editingId ? "Edit Review" : "Add Review"}
-              </h3>
-
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                {/* Client Avatar */}
-                <ImageUploader
-                  label="Client Profile Avatar"
-                  value={watchAvatar}
-                  onChange={(url) => setValue("avatar", url, { shouldDirty: true })}
-                />
-
-                {/* Author Name */}
-                <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Couple Names</label>
-                  <input
-                    type="text"
-                    {...register("author")}
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none"
-                    placeholder="Diya & Kedar"
-                  />
-                  {errors.author && <p className="text-[10px] text-red-500 font-sans mt-1">{errors.author.message}</p>}
-                </div>
-
-                {/* Role Details */}
-                <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Event context / Venue</label>
-                  <input
-                    type="text"
-                    {...register("role")}
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none"
-                    placeholder="Rambagh Palace, Jaipur"
-                  />
-                  {errors.role && <p className="text-[10px] text-red-500 font-sans mt-1">{errors.role.message}</p>}
-                </div>
-
-                {/* Quote Text */}
-                <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Quote Text</label>
-                  <textarea
-                    rows={4}
-                    {...register("quote")}
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none resize-none"
-                    placeholder="The team's composition and editorial grading was absolutely spectacular..."
-                  />
-                  {errors.quote && <p className="text-[10px] text-red-500 font-sans mt-1">{errors.quote.message}</p>}
-                </div>
-
-                <div className="flex gap-3 pt-3">
-                  <button
-                    type="button"
-                    onClick={() => setIsFormOpen(false)}
-                    className="flex-1 py-3 border border-white/10 hover:bg-white/5 text-white text-[10px] font-sans uppercase tracking-widest font-bold rounded-sm transition-colors cursor-pointer"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={createMutation.isPending || updateMutation.isPending}
-                    className="flex-1 py-3 bg-luxury-accent hover:bg-luxury-hover text-luxury-bg text-[10px] font-sans uppercase tracking-widest font-bold rounded-sm transition-all cursor-pointer flex items-center justify-center gap-2"
-                  >
-                    {(createMutation.isPending || updateMutation.isPending) && (
-                      <Loader2 className="animate-spin" size={12} />
-                    )}
-                    {editingId ? "Save Review" : "Create Review"}
-                  </button>
-                </div>
-              </form>
+            {/* Author Name */}
+            <div className="flex flex-col space-y-1.5">
+              <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Couple Names</label>
+              <AdminInput
+                type="text"
+                {...register("author")}
+                placeholder="Diya & Kedar"
+              />
+              {errors.author && <p className="text-[10px] text-red-500 font-sans mt-1">{errors.author.message}</p>}
             </div>
-          </div>
-        )}
+
+            {/* Role Details */}
+            <div className="flex flex-col space-y-1.5">
+              <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Event context / Venue</label>
+              <AdminInput
+                type="text"
+                {...register("role")}
+                placeholder="Rambagh Palace, Jaipur"
+              />
+              {errors.role && <p className="text-[10px] text-red-500 font-sans mt-1">{errors.role.message}</p>}
+            </div>
+
+            {/* Quote Text */}
+            <div className="flex flex-col space-y-1.5">
+              <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Quote Text</label>
+              <AdminTextarea
+                rows={4}
+                {...register("quote")}
+                placeholder="The team's composition and editorial grading was absolutely spectacular..."
+              />
+              {errors.quote && <p className="text-[10px] text-red-500 font-sans mt-1">{errors.quote.message}</p>}
+            </div>
+
+            <div className="flex gap-3 pt-3">
+              <AdminButton
+                type="button"
+                onClick={() => setIsFormOpen(false)}
+                variant="secondary"
+                className="flex-1"
+              >
+                Cancel
+              </AdminButton>
+              <AdminButton
+                type="submit"
+                disabled={createMutation.isPending || updateMutation.isPending}
+                className="flex-1"
+              >
+                {(createMutation.isPending || updateMutation.isPending) && (
+                  <Loader2 className="animate-spin mr-1.5 inline" size={12} />
+                )}
+                {editingId ? "Save Review" : "Create Review"}
+              </AdminButton>
+            </div>
+          </form>
+        </AdminModal>
 
         {/* Delete Confirmation Modal */}
         <ConfirmModal

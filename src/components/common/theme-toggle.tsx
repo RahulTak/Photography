@@ -31,18 +31,18 @@ export function ThemeToggle() {
   const getIcon = () => {
     switch (theme) {
       case "light":
-        return <Sun size={12} className="text-luxury-accent animate-pulse" />;
+        return <Sun size={12} className="text-accent animate-pulse" />;
       case "dark":
-        return <Moon size={12} className="text-luxury-accent" />;
+        return <Moon size={12} className="text-accent" />;
       case "system":
-        return <Laptop size={12} className="text-luxury-accent" />;
+        return <Laptop size={12} className="text-accent" />;
     }
   };
 
   return (
     <button
       onClick={cycleTheme}
-      className="px-2.5 py-1.5 rounded-sm border border-luxury-border/60 hover:border-luxury-accent bg-luxury-sec/30 hover:bg-luxury-accent/5 text-luxury-muted hover:text-white transition-all duration-300 cursor-pointer flex items-center gap-1.5 font-sans text-[9px] uppercase tracking-widest font-semibold"
+      className="px-2.5 py-1.5 rounded-sm border border-border/60 hover:border-accent bg-card/30 hover:bg-accent/5 text-muted hover:text-foreground transition-all duration-300 cursor-pointer flex items-center gap-1.5 font-sans text-[9px] uppercase tracking-widest font-semibold"
       style={{ letterSpacing: "0.15em" }}
       aria-label={`Current theme is ${theme}. Click to switch.`}
       title={`Theme: ${theme.toUpperCase()}`}

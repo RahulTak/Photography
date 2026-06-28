@@ -21,6 +21,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useAdminLogout, useAdminMe } from "@/hooks/admin/useAdmin";
+import { ThemeToggle } from "@/components/common/theme-toggle";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -59,10 +60,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0B0B0B] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
-          <div className="w-10 h-10 border-2 border-luxury-accent border-t-transparent rounded-full animate-spin" />
-          <span className="text-xs uppercase tracking-widest text-luxury-muted font-sans font-light">
+          <div className="w-10 h-10 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+          <span className="text-xs uppercase tracking-widest text-muted font-sans font-light">
             Authenticating Console...
           </span>
         </div>
@@ -71,17 +72,17 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#0B0B0B] text-white font-sans flex">
+    <div className="min-h-screen bg-background text-foreground font-sans flex">
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col w-64 border-r border-white/5 bg-[#0F0F0F] shrink-0">
+      <aside className="hidden lg:flex flex-col w-64 border-r border-border bg-card shrink-0">
         {/* Brand Monogram */}
-        <div className="h-20 flex items-center px-6 border-b border-white/5 gap-3">
-          <div className="w-8 h-8 rounded-sm bg-luxury-accent/10 border border-luxury-accent/30 flex items-center justify-center text-luxury-accent">
+        <div className="h-20 flex items-center px-6 border-b border-border gap-3">
+          <div className="w-8 h-8 rounded-sm bg-accent/10 border border-accent/30 flex items-center justify-center text-accent">
             <ShieldCheck size={18} />
           </div>
           <div>
             <span className="font-serif font-bold text-sm tracking-wide block">JP PHOTOGRAPHY</span>
-            <span className="text-[9px] uppercase tracking-widest text-luxury-accent block font-medium">ADMIN DASHBOARD</span>
+            <span className="text-[9px] uppercase tracking-widest text-accent block font-medium">ADMIN DASHBOARD</span>
           </div>
         </div>
 
@@ -96,11 +97,11 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 href={item.href}
                 className={`flex items-center gap-3.5 px-4 py-3 rounded-sm text-xs font-medium tracking-wide uppercase transition-all duration-200 ${
                   isActive
-                    ? "bg-luxury-accent/10 text-luxury-accent border-l-2 border-luxury-accent font-semibold"
-                    : "text-luxury-muted hover:text-white hover:bg-white/5"
+                    ? "bg-accent/10 text-accent border-l-2 border-accent font-semibold"
+                    : "text-muted hover:text-foreground hover:bg-secondary"
                 }`}
               >
-                <Icon size={16} className={isActive ? "text-luxury-accent" : "text-luxury-muted"} />
+                <Icon size={16} className={isActive ? "text-accent" : "text-muted"} />
                 <span>{item.label}</span>
               </Link>
             );
@@ -108,20 +109,20 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         </nav>
 
         {/* Admin Footer Profiler */}
-        <div className="p-4 border-t border-white/5 bg-[#0A0A0A] flex items-center justify-between">
+        <div className="p-4 border-t border-border bg-secondary/50 flex items-center justify-between">
           <div className="flex items-center gap-2.5 truncate">
-            <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-xs font-semibold text-luxury-accent border border-white/5">
+            <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-semibold text-accent border border-border">
               {adminName[0].toUpperCase()}
             </div>
             <div className="truncate">
-              <span className="text-xs font-bold text-white block truncate">{adminName}</span>
-              <span className="text-[9px] text-luxury-muted uppercase tracking-wider block">Role: Owner</span>
+              <span className="text-xs font-bold text-foreground block truncate">{adminName}</span>
+              <span className="text-[9px] text-muted uppercase tracking-wider block">Role: Owner</span>
             </div>
           </div>
           <button
             onClick={handleLogout}
             disabled={logoutMutation.isPending}
-            className="p-2 hover:bg-red-500/10 hover:text-red-400 text-luxury-muted rounded-sm transition-colors cursor-pointer"
+            className="p-2 hover:bg-red-500/10 hover:text-red-400 text-muted rounded-sm transition-colors cursor-pointer"
             title="Log Out Console"
           >
             <LogOut size={16} />
@@ -138,26 +139,26 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               animate={{ opacity: 0.5 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsSidebarOpen(false)}
-              className="fixed inset-0 bg-black z-40 lg:hidden"
+              className="fixed inset-0 bg-black/50 z-40 lg:hidden"
             />
             <motion.aside
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", bounce: 0.15 }}
-              className="fixed inset-y-0 left-0 w-64 bg-[#0F0F0F] border-r border-white/5 z-50 flex flex-col lg:hidden"
+              className="fixed inset-y-0 left-0 w-64 bg-card border-r border-border z-50 flex flex-col lg:hidden"
             >
-              <div className="h-20 flex items-center justify-between px-6 border-b border-white/5">
+              <div className="h-20 flex items-center justify-between px-6 border-b border-border">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-sm bg-luxury-accent/10 border border-luxury-accent/30 flex items-center justify-center text-luxury-accent">
+                  <div className="w-8 h-8 rounded-sm bg-accent/10 border border-accent/30 flex items-center justify-center text-accent">
                     <ShieldCheck size={18} />
                   </div>
                   <div>
                     <span className="font-serif font-bold text-sm tracking-wide">JP PHOTOGRAPHY</span>
-                    <span className="text-[9px] uppercase tracking-widest text-luxury-accent block font-medium">ADMIN</span>
+                    <span className="text-[9px] uppercase tracking-widest text-accent block font-medium">ADMIN</span>
                   </div>
                 </div>
-                <button onClick={() => setIsSidebarOpen(false)} className="text-white/70 hover:text-white">
+                <button onClick={() => setIsSidebarOpen(false)} className="text-foreground/75 hover:text-foreground">
                   <X size={20} />
                 </button>
               </div>
@@ -172,8 +173,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                       onClick={() => setIsSidebarOpen(false)}
                       className={`flex items-center gap-3.5 px-4 py-3 rounded-sm text-xs font-medium tracking-wide uppercase transition-all duration-200 ${
                         isActive
-                          ? "bg-luxury-accent/10 text-luxury-accent border-l-2 border-luxury-accent font-semibold"
-                          : "text-luxury-muted hover:text-white hover:bg-white/5"
+                          ? "bg-accent/10 text-accent border-l-2 border-accent font-semibold"
+                          : "text-muted hover:text-foreground hover:bg-secondary"
                       }`}
                     >
                       <Icon size={16} />
@@ -182,19 +183,19 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                   );
                 })}
               </nav>
-              <div className="p-4 border-t border-white/5 bg-[#0A0A0A] flex items-center justify-between">
+              <div className="p-4 border-t border-border bg-secondary/50 flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-xs font-semibold text-luxury-accent border border-white/5">
+                  <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-semibold text-accent border border-border">
                     {adminName[0].toUpperCase()}
                   </div>
                   <div>
-                    <span className="text-xs font-bold text-white block">{adminName}</span>
-                    <span className="text-[9px] text-luxury-muted uppercase tracking-wider block">Owner</span>
+                    <span className="text-xs font-bold text-foreground block">{adminName}</span>
+                    <span className="text-[9px] text-muted uppercase tracking-wider block">Owner</span>
                   </div>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="p-2 hover:bg-red-500/10 hover:text-red-400 text-luxury-muted rounded-sm transition-colors cursor-pointer"
+                  className="p-2 hover:bg-red-500/10 hover:text-red-400 text-muted rounded-sm transition-colors cursor-pointer"
                 >
                   <LogOut size={16} />
                 </button>
@@ -205,27 +206,27 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       </AnimatePresence>
 
       {/* Main Panel Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto h-screen bg-[#0B0B0B]">
+      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto h-screen bg-background">
         {/* Topbar Header */}
-        <header className="h-20 bg-[#0F0F0F] border-b border-white/5 px-6 flex items-center justify-between lg:justify-end shrink-0">
+        <header className="h-20 bg-card border-b border-border px-6 flex items-center justify-between lg:justify-end shrink-0">
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="lg:hidden p-2 text-luxury-muted hover:text-white bg-white/5 rounded-sm"
+            className="lg:hidden p-2 text-muted hover:text-foreground bg-secondary rounded-sm"
           >
             <Menu size={18} />
           </button>
           
           <div className="flex items-center gap-6">
             {/* Breadcrumb Indicators */}
-            <div className="hidden md:flex items-center gap-2 text-[10px] uppercase tracking-widest text-luxury-muted">
+            <div className="hidden md:flex items-center gap-2 text-[10px] uppercase tracking-widest text-muted">
               <span>Admin</span>
               <span>/</span>
-              <span className="text-luxury-accent font-semibold">{activeItem.label}</span>
+              <span className="text-accent font-semibold">{activeItem.label}</span>
             </div>
             
-            <div className="h-4 w-[1px] bg-white/10 hidden md:block" />
+            <div className="h-4 w-[1px] bg-border hidden md:block" />
 
-            <span className="text-[10px] uppercase tracking-widest text-luxury-muted font-mono font-light">
+            <span className="text-[10px] uppercase tracking-widest text-muted font-mono font-light">
               {new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
             </span>
           </div>

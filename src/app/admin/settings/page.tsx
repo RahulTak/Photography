@@ -7,6 +7,10 @@ import * as z from "zod";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { useAdminSettings, useUpdateAdminSettings } from "@/hooks/admin/useAdmin";
 import { Loader2, Save, CheckCircle } from "lucide-react";
+import { AdminInput } from "@/components/admin/ui/admin-input";
+import { AdminTextarea } from "@/components/admin/ui/admin-textarea";
+import { AdminButton } from "@/components/admin/ui/admin-button";
+import { AdminCard } from "@/components/admin/ui/admin-card";
 
 // Settings validation schema
 const settingsSchema = z.object({
@@ -74,13 +78,13 @@ export default function AdminSettingsPage() {
       <div className="space-y-8">
         {/* Header Controls */}
         <div className="space-y-1">
-          <span className="text-[10px] uppercase tracking-widest text-luxury-accent font-semibold">CONSOLE</span>
-          <h2 className="text-2xl md:text-3xl font-serif font-bold text-white">System Settings</h2>
+          <span className="text-[10px] uppercase tracking-widest text-accent font-semibold">CONSOLE</span>
+          <h2 className="text-2xl md:text-3xl font-serif font-bold text-foreground">System Settings</h2>
         </div>
 
         {isLoading ? (
           <div className="h-60 flex items-center justify-center">
-            <Loader2 className="animate-spin text-luxury-accent" size={24} />
+            <Loader2 className="animate-spin text-accent" size={24} />
           </div>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 max-w-3xl">
@@ -96,19 +100,14 @@ export default function AdminSettingsPage() {
             )}
 
             {/* General Info Card */}
-            <div className="bg-[#151515] border border-white/5 p-6 rounded-sm space-y-6 shadow-lg">
-              <h3 className="font-serif text-lg font-bold text-white border-b border-white/5 pb-3">
-                Studio Contact Information
-              </h3>
-              
+            <AdminCard title="Studio Contact Information">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* Studio Name */}
                 <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Studio Name</label>
-                  <input
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Studio Name</label>
+                  <AdminInput
                     type="text"
                     {...register("studioName")}
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors"
                   />
                   {errors.studioName && (
                     <p className="text-[10px] text-red-500 font-sans mt-1">{errors.studioName.message}</p>
@@ -117,11 +116,10 @@ export default function AdminSettingsPage() {
 
                 {/* Telephone */}
                 <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Studio Hotline</label>
-                  <input
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Studio Hotline</label>
+                  <AdminInput
                     type="text"
                     {...register("telephone")}
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors"
                   />
                   {errors.telephone && (
                     <p className="text-[10px] text-red-500 font-sans mt-1">{errors.telephone.message}</p>
@@ -132,11 +130,10 @@ export default function AdminSettingsPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {/* Email */}
                 <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Public Email</label>
-                  <input
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Public Email</label>
+                  <AdminInput
                     type="email"
                     {...register("email")}
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors"
                   />
                   {errors.email && (
                     <p className="text-[10px] text-red-500 font-sans mt-1">{errors.email.message}</p>
@@ -145,34 +142,28 @@ export default function AdminSettingsPage() {
 
                 {/* Address */}
                 <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">HQ Address</label>
-                  <input
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">HQ Address</label>
+                  <AdminInput
                     type="text"
                     {...register("address")}
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors"
                   />
                   {errors.address && (
                     <p className="text-[10px] text-red-500 font-sans mt-1">{errors.address.message}</p>
                   )}
                 </div>
               </div>
-            </div>
+            </AdminCard>
 
             {/* Socials Config Card */}
-            <div className="bg-[#151515] border border-white/5 p-6 rounded-sm space-y-6 shadow-lg">
-              <h3 className="font-serif text-lg font-bold text-white border-b border-white/5 pb-3">
-                Social Accounts URL
-              </h3>
-
+            <AdminCard title="Social Accounts URL">
               <div className="space-y-4">
                 {/* Instagram */}
                 <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Instagram Account</label>
-                  <input
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Instagram Account</label>
+                  <AdminInput
                     type="text"
                     {...register("instagram")}
                     placeholder="https://instagram.com/jpphotography"
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors"
                   />
                   {errors.instagram && (
                     <p className="text-[10px] text-red-500 font-sans mt-1">{errors.instagram.message}</p>
@@ -181,12 +172,11 @@ export default function AdminSettingsPage() {
 
                 {/* YouTube */}
                 <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">YouTube Channel</label>
-                  <input
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">YouTube Channel</label>
+                  <AdminInput
                     type="text"
                     {...register("youtube")}
                     placeholder="https://youtube.com/@jpphotography"
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors"
                   />
                   {errors.youtube && (
                     <p className="text-[10px] text-red-500 font-sans mt-1">{errors.youtube.message}</p>
@@ -195,34 +185,28 @@ export default function AdminSettingsPage() {
 
                 {/* Facebook */}
                 <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">Facebook Page</label>
-                  <input
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">Facebook Page</label>
+                  <AdminInput
                     type="text"
                     {...register("facebook")}
                     placeholder="https://facebook.com/jpphotography"
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors"
                   />
                   {errors.facebook && (
                     <p className="text-[10px] text-red-500 font-sans mt-1">{errors.facebook.message}</p>
                   )}
                 </div>
               </div>
-            </div>
+            </AdminCard>
 
             {/* SEO Config Card */}
-            <div className="bg-[#151515] border border-white/5 p-6 rounded-sm space-y-6 shadow-lg">
-              <h3 className="font-serif text-lg font-bold text-white border-b border-white/5 pb-3">
-                SEO Default Metadata
-              </h3>
-
+            <AdminCard title="SEO Default Metadata">
               <div className="space-y-4">
                 {/* SEO Title */}
                 <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">SEO Page Title</label>
-                  <input
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">SEO Page Title</label>
+                  <AdminInput
                     type="text"
                     {...register("seoTitle")}
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none transition-colors"
                   />
                   {errors.seoTitle && (
                     <p className="text-[10px] text-red-500 font-sans mt-1">{errors.seoTitle.message}</p>
@@ -231,25 +215,23 @@ export default function AdminSettingsPage() {
 
                 {/* SEO Description */}
                 <div className="flex flex-col space-y-1.5">
-                  <label className="text-[10px] uppercase tracking-wider text-luxury-muted font-sans font-medium">SEO Meta Description</label>
-                  <textarea
+                  <label className="text-[10px] uppercase tracking-wider text-muted font-sans font-medium">SEO Meta Description</label>
+                  <AdminTextarea
                     rows={4}
                     {...register("seoDescription")}
-                    className="bg-luxury-bg border border-white/5 focus:border-luxury-accent text-white px-4 py-2.5 rounded-sm text-xs font-sans outline-none resize-none transition-colors"
                   />
                   {errors.seoDescription && (
                     <p className="text-[10px] text-red-500 font-sans mt-1">{errors.seoDescription.message}</p>
                   )}
                 </div>
               </div>
-            </div>
+            </AdminCard>
 
             {/* Action Bar */}
             <div className="flex justify-end">
-              <button
+              <AdminButton
                 type="submit"
                 disabled={updateMutation.isPending || !isDirty}
-                className="px-8 py-3.5 bg-luxury-accent hover:bg-luxury-hover disabled:bg-neutral-800 disabled:text-neutral-500 text-luxury-bg text-xs font-sans uppercase tracking-widest font-bold rounded-sm transition-all duration-300 flex items-center gap-2 cursor-pointer shadow-lg"
               >
                 {updateMutation.isPending ? (
                   <>
@@ -262,7 +244,7 @@ export default function AdminSettingsPage() {
                     Save Settings
                   </>
                 )}
-              </button>
+              </AdminButton>
             </div>
           </form>
         )}
