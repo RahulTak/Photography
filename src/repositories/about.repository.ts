@@ -3,38 +3,39 @@ import { prisma } from "@/db/prisma";
 export const aboutRepository = {
   // Get the active about content
   async find() {
-    const [content, awards, team, homeDoc] = await Promise.all([
-      prisma.aboutContent.findFirst({
-        where: {
-          deletedAt: null,
-        },
-      }),
-      prisma.award.findMany({
-        where: {
-          deletedAt: null,
-          active: true,
-        },
-        orderBy: {
-          sortOrder: "asc",
-        },
-      }),
-      prisma.team.findMany({
-        where: {
-          deletedAt: null,
-          active: true,
-        },
-        orderBy: {
-          sortOrder: "asc",
-        },
-      }),
-      prisma.homeContent.findFirst({
-        where: {
-          deletedAt: null,
-        },
-      }),
-    ]);
+    const content = await prisma.aboutContent.findFirst({
+      where: {
+        deletedAt: null,
+      },
+    });
 
     if (!content) return null;
+
+    const awards = await prisma.award.findMany({
+      where: {
+        deletedAt: null,
+        active: true,
+      },
+      orderBy: {
+        sortOrder: "asc",
+      },
+    });
+
+    const team = await prisma.team.findMany({
+      where: {
+        deletedAt: null,
+        active: true,
+      },
+      orderBy: {
+        sortOrder: "asc",
+      },
+    });
+
+    const homeDoc = await prisma.homeContent.findFirst({
+      where: {
+        deletedAt: null,
+      },
+    });
 
     return {
       hero: {
@@ -119,28 +120,39 @@ export const aboutRepository = {
       process: data.process,
     };
 
-    // Save stats to HomeContent if provided
-    if (data.stats) {
-      const homeDoc = await prisma.homeContent.findFirst({
-        where: { deletedAt: null },
-      });
-      if (homeDoc) {
-        await prisma.homeContent.update({
-          where: { id: homeDoc.id },
-          data: {
-            stats: data.stats,
-          },
-        });
-      }
-    }
-
     if (existing) {
+      const updateData: Record<string, any> = {};
+      const keys = Object.keys(docData) as (keyof typeof docData)[];
+
+      for (const key of keys) {
+        const val1 = existing[key];
+        const val2 = docData[key];
+
+        // Deep comparison for arrays/objects
+        if (typeof val1 === "object" && val1 !== null && typeof val2 === "object" && val2 !== null) {
+          if (JSON.stringify(val1) !== JSON.stringify(val2)) {
+            updateData[key] = val2;
+          }
+        } else {
+          if (val1 !== val2) {
+            updateData[key] = val2;
+          }
+        }
+      }
+
+      if (Object.keys(updateData).length === 0) {
+        console.log("[aboutRepository] No changes detected. Skipping write query.");
+        return existing;
+      }
+
+      console.log(`[aboutRepository] Optimization: Updating changed fields: ${Object.keys(updateData).join(", ")}`);
       return prisma.aboutContent.update({
         where: { id: existing.id },
-        data: docData,
+        data: updateData,
       });
     }
 
+    console.log("[aboutRepository] Creating new about content document.");
     return prisma.aboutContent.create({
       data: docData,
     });
